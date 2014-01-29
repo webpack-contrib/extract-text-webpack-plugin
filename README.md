@@ -9,7 +9,7 @@ module.exports = {
 		loaders: [
 			{ test: /\.css$/, loaders: [
 				"style-loader",
-				ExtractTextPlugin.loader,
+				ExtractTextPlugin.loader(),
 				"css-loader"
 			]}
 		]
@@ -23,13 +23,14 @@ module.exports = {
 ## API
 
 ``` javascript
-new ExtractTextPlugin(filename: string, includeChunks: boolean)
+new ExtractTextPlugin([id: string], filename: string, [options])
 ```
 
-* `filename` the filename of the result file. May contain `[name]`, `[hash]` or `[id]`.
-* `includeChunks` if false (default) only texts from entry chunks is extracted. If true texts from all children is merged into the file for the entry chunk. (TODO)
+* `id` TODO
+* `filename` the filename of the result file. May contain `[name]`.
+* `options` TODO
 
-There is also a `loader` property on the instance. You should use this if you have more than one ExtractTextPlugin.
+There is also a `loader` function on the instance. You should use this if you have more than one ExtractTextPlugin.
 
 ## License
 

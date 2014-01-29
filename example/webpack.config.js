@@ -10,8 +10,9 @@ module.exports = {
 	module: {
 		loaders: [
 			{ test: /\.css$/, loaders: [
+				plugin.loader({remove:true, extract: false}),
 				"style-loader",
-				plugin.loader,
+				plugin.loader(),
 				"css-loader"
 			]}
 		]

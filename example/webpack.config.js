@@ -14,7 +14,8 @@ module.exports = {
 				"style-loader",
 				plugin.loader(),
 				"css-loader"
-			]}
+			]},
+			{ test: /\.png$/, loader: "file-loader" }
 		]
 	},
 	plugins: [

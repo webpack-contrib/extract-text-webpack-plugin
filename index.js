@@ -3,14 +3,15 @@
 	Author Tobias Koppers @sokra
 */
 var RawSource = require("webpack/lib/RawSource");
+var Template = require("webpack/lib/Template");
 var async = require("async");
 
 var nextId = 0;
 
 function ExtractTextPlugin(id, filename, options) {
 	if(typeof filename !== "string") {
-		filename = id;
 		options = filename;
+		filename = id;
 		id = ++nextId;
 	}
 	if(!options) options = {};
@@ -31,21 +32,23 @@ ExtractTextPlugin.prototype.loader = function(options) {
 };
 
 ExtractTextPlugin.prototype.apply = function(compiler) {
+	var options = this.options;
 	compiler.plugin("compilation", function(compilation) {
 		compilation.plugin("normal-module-loader", function(loaderContext, module) {
-			loaderContext[__dirname] = function(text, options) {
+			loaderContext[__dirname] = function(text, opt) {
 				module.meta[__dirname] = {
 					text: text,
-					options: options
+					options: opt
 				};
-				return !!module.meta[__dirname + "/extract"];
+				return options.allChunks || module.meta[__dirname + "/extract"];
 			};
 		}.bind(this));
 		var filename = this.filename;
 		var id = this.id;
 		compilation.plugin("optimize-tree", function(chunks, modules, callback) {
+			var texts = {};
 			async.forEach(chunks, function(chunk, callback) {
-				var shouldExtract = !!chunk.initial;
+				var shouldExtract = !!(options.allChunks || chunk.initial);
 				var text = [];
 				async.forEach(chunk.modules, function(module, callback) {
 					var meta = module.meta[__dirname];
@@ -60,18 +63,27 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 								text.push(meta.text);
 								callback();
 							});
-						} else callback();
+						} else {
+							text.push(meta.text);
+							callback();
+						}
 					} else callback();
 				}, function(err) {
 					if(err) return callback(err);
 					if(text.length > 0) {
-						var file = filename.replace(/\[name\]/g, chunk.name);
-						text = text.join("");
-						this.assets[file] = new RawSource(text);
+						var file = filename.replace(Template.REGEXP_NAME, chunk.name);
+						texts[file] = (texts[file] || []).concat(text);
 					}
 					callback();
 				}.bind(this));
-			}.bind(this), callback);
+			}.bind(this), function(err) {
+				if(err) return callback(err);
+				Object.keys(texts).forEach(function(file) {
+					var text = texts[file].join("");
+					this.assets[file] = new RawSource(text);
+				}.bind(this));
+				callback();
+			}.bind(this));
 		});
 	}.bind(this));
 };

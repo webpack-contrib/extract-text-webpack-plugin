@@ -51,7 +51,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 				var shouldExtract = !!(options.allChunks || chunk.initial);
 				var text = [];
 				async.forEach(chunk.modules, function(module, callback) {
-					var meta = module.meta[__dirname];
+					var meta = module.meta && module.meta[__dirname];
 					if(meta) {
 						var wasExtracted = typeof meta.text === "string";
 						if(shouldExtract !== wasExtracted) {

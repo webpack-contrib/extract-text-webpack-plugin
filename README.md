@@ -34,6 +34,8 @@ new ExtractTextPlugin([id: string], filename: string, [options])
 
 There is also a `loader` function on the instance. You should use this if you have more than one ExtractTextPlugin.
 
+**NOTE: Currently you MUST set `allChunks` to `true`.**
+
 ## License
 
 MIT (http://www.opensource.org/licenses/mit-license.php)

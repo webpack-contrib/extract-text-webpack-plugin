@@ -36,6 +36,8 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 	compiler.plugin("compilation", function(compilation) {
 		compilation.plugin("normal-module-loader", function(loaderContext, module) {
 			loaderContext[__dirname] = function(text, opt) {
+				if(typeof text !== "string" && text !== null)
+					throw new Error("Exported value is not a string.");
 				module.meta[__dirname] = {
 					text: text,
 					options: opt
@@ -50,16 +52,18 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 			async.forEach(chunks, function(chunk, callback) {
 				var shouldExtract = !!(options.allChunks || chunk.initial);
 				var text = [];
-				async.forEach(chunk.modules, function(module, callback) {
+				async.forEach(chunk.modules.slice(), function(module, callback) {
 					var meta = module.meta && module.meta[__dirname];
 					if(meta) {
 						var wasExtracted = typeof meta.text === "string";
 						if(shouldExtract !== wasExtracted) {
 							module.meta[__dirname + "/extract"] = shouldExtract
-							compilation.buildModule(module, function(err) {
+							compilation.rebuildModule(module, function(err) {
 								if(err) return callback(err);
 								meta = module.meta[__dirname];
-								if(typeof meta.text !== "string") return callback(new Error(module.identifier() + " doesn't export text"));
+								if(typeof meta.text !== "string") {
+									return callback(new Error(module.identifier() + " doesn't export text"));
+								}
 								text.push(meta.text);
 								callback();
 							});

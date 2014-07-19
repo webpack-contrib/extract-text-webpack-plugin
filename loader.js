@@ -24,7 +24,7 @@ module.exports.pitch = function(request, preReq, data) {
 		}
 
 		if(query.extract !== false) {
-			var childFilename = __dirname + request;
+			var childFilename = __dirname + " " + request;
 			var outputOptions = {
 				filename: childFilename,
 				publicPath: this._compilation.outputOptions.publicPath

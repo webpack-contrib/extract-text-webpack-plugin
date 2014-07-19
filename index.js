@@ -22,7 +22,7 @@ function ExtractTextPlugin(id, filename, options) {
 module.exports = ExtractTextPlugin;
 
 ExtractTextPlugin.loader = function(options) {
-	return require.resolve("./loader") + "?" + JSON.stringify(options);
+	return require.resolve("./loader") + (options ? "?" + JSON.stringify(options) : "");
 };
 
 ExtractTextPlugin.prototype.loader = function(options) {
@@ -59,7 +59,10 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 						if(shouldExtract !== wasExtracted) {
 							module.meta[__dirname + "/extract"] = shouldExtract
 							compilation.rebuildModule(module, function(err) {
-								if(err) return callback(err);
+								if(err) {
+									compilation.errors.push(err);
+									return callback();
+								}
 								meta = module.meta[__dirname];
 								if(typeof meta.text !== "string") {
 									return callback(new Error(module.identifier() + " doesn't export text"));

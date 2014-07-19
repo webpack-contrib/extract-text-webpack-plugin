@@ -1,5 +1,4 @@
 var ExtractTextPlugin = require("../");
-var plugin = new ExtractTextPlugin("styles.css");
 module.exports = {
 	entry: "./entry.js",
 	output: {
@@ -10,15 +9,15 @@ module.exports = {
 	module: {
 		loaders: [
 			{ test: /\.css$/, loaders: [
-				plugin.loader({remove:true, extract: false}),
+				ExtractTextPlugin.loader({remove:true, extract: false}),
 				"style-loader",
-				plugin.loader(),
+				ExtractTextPlugin.loader(),
 				"css-loader"
 			]},
 			{ test: /\.png$/, loader: "file-loader" }
 		]
 	},
 	plugins: [
-		plugin
+		new ExtractTextPlugin("styles.css")
 	]
 };

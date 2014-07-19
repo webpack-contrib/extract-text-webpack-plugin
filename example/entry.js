@@ -1,2 +1,2 @@
-require.include("./style.css");
+require("./style.css");
 require("./dep");

@@ -25,10 +25,44 @@ ExtractTextPlugin.loader = function(options) {
 	return require.resolve("./loader") + (options ? "?" + JSON.stringify(options) : "");
 };
 
+ExtractTextPlugin.extract = function(before, loader) {
+	if(loader) {
+		return [
+			ExtractTextPlugin.loader({remove: true, extract: false}),
+			before,
+			ExtractTextPlugin.loader(),
+			loader
+		].join("!");
+	} else {
+		loader = before;
+		return [
+			ExtractTextPlugin.loader(),
+			loader
+		].join("!");
+	}
+};
+
 ExtractTextPlugin.prototype.loader = function(options) {
 	options = JSON.parse(JSON.stringify(options || {}));
 	options.id = this.id;
 	return ExtractTextPlugin.loader(options);
+};
+
+ExtractTextPlugin.prototype.extract = function(before, loader) {
+	if(loader) {
+		return [
+			this.loader({remove: true, extract: false}),
+			before,
+			this.loader(),
+			loader
+		].join("!");
+	} else {
+		loader = before;
+		return [
+			this.loader(),
+			loader
+		].join("!");
+	}
 };
 
 ExtractTextPlugin.prototype.apply = function(compiler) {

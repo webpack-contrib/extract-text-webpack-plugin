@@ -8,12 +8,7 @@ module.exports = {
 	},
 	module: {
 		loaders: [
-			{ test: /\.css$/, loaders: [
-				ExtractTextPlugin.loader({remove:true, extract: false}),
-				"style-loader",
-				ExtractTextPlugin.loader(),
-				"css-loader"
-			]},
+			{ test: /\.css$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader")},
 			{ test: /\.png$/, loader: "file-loader" }
 		]
 	},

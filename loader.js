@@ -45,7 +45,7 @@ module.exports.pitch = function(request, preReq, data) {
 			});
 			var source;
 			childCompiler.plugin("after-compile", function(compilation, callback) {
-				source = compilation.assets[childFilename].source();
+				source = compilation.assets[childFilename] && compilation.assets[childFilename].source();
 				delete compilation.assets[childFilename];
 				callback();
 			}.bind(this))
@@ -53,9 +53,16 @@ module.exports.pitch = function(request, preReq, data) {
 			childCompiler.runAsChild(function(err, entries, compilation) {
 				if(err) return callback(err);
 
-				var text = this.exec(source, request);
-				this[__dirname](text, query);
-				callback(null, resultSource);
+				if(!source) {
+					return callback(new Error("Didn't get a result from child compiler"));
+				}
+				try {
+					var text = this.exec(source, request);
+					this[__dirname](text, query);
+					callback(null, resultSource);
+				} catch(e) {
+					callback(e);
+				}
 			}.bind(this));
 		} else {
 			this[__dirname]("", query);

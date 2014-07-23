@@ -15,7 +15,12 @@ module.exports = function(source) {
 module.exports.pitch = function(request, preReq, data) {
 	this.cacheable && this.cacheable();
 	var query = loaderUtils.parseQuery(this.query);
+	this.addDependency(this.resourcePath);
 	if(this[__dirname](null, query)) {
+		if(query.omit) {
+			this.loaderIndex += +query.omit + 1;
+			request = request.split("!").slice(+query.omit).join("!");
+		}
 		if(query.remove) {
 			var resultSource = "// removed by extract-text-webpack-plugin";
 		} else {
@@ -56,13 +61,19 @@ module.exports.pitch = function(request, preReq, data) {
 				if(!source) {
 					return callback(new Error("Didn't get a result from child compiler"));
 				}
+				compilation.fileDependencies.forEach(function(dep) {
+					this.addDependency(dep);
+				}, this);
+				compilation.contextDependencies.forEach(function(dep) {
+					this.addContextDependency(dep);
+				}, this);
 				try {
 					var text = this.exec(source, request);
 					this[__dirname](text, query);
-					callback(null, resultSource);
 				} catch(e) {
-					callback(e);
+					return callback(e);
 				}
+				callback(null, resultSource);
 			}.bind(this));
 		} else {
 			this[__dirname]("", query);

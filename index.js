@@ -28,15 +28,14 @@ ExtractTextPlugin.loader = function(options) {
 ExtractTextPlugin.extract = function(before, loader) {
 	if(loader) {
 		return [
-			ExtractTextPlugin.loader({remove: true, extract: false}),
+			ExtractTextPlugin.loader({omit: before.split("!").length, extract: true, remove: true}),
 			before,
-			ExtractTextPlugin.loader(),
 			loader
 		].join("!");
 	} else {
 		loader = before;
 		return [
-			ExtractTextPlugin.loader(),
+			ExtractTextPlugin.loader({remove: true}),
 			loader
 		].join("!");
 	}
@@ -51,15 +50,14 @@ ExtractTextPlugin.prototype.loader = function(options) {
 ExtractTextPlugin.prototype.extract = function(before, loader) {
 	if(loader) {
 		return [
-			this.loader({remove: true, extract: false}),
+			this.loader({move: before.split("!").length, extract: true, remove: true}),
 			before,
-			this.loader(),
 			loader
 		].join("!");
 	} else {
 		loader = before;
 		return [
-			this.loader(),
+			this.loader({remove: true}),
 			loader
 		].join("!");
 	}
@@ -67,7 +65,7 @@ ExtractTextPlugin.prototype.extract = function(before, loader) {
 
 ExtractTextPlugin.prototype.apply = function(compiler) {
 	var options = this.options;
-	compiler.plugin("compilation", function(compilation) {
+	compiler.plugin("this-compilation", function(compilation) {
 		compilation.plugin("normal-module-loader", function(loaderContext, module) {
 			loaderContext[__dirname] = function(text, opt) {
 				if(typeof text !== "string" && text !== null)
@@ -99,7 +97,9 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 								}
 								meta = module.meta[__dirname];
 								if(typeof meta.text !== "string") {
-									return callback(new Error(module.identifier() + " doesn't export text"));
+									var err = new Error(module.identifier() + " doesn't export text");
+									compilation.errors.push(err);
+									return callback();
 								}
 								text.push(meta.text);
 								callback();

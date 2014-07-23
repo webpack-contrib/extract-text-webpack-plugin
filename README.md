@@ -7,12 +7,7 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 module.exports = {
 	module: {
 		loaders: [
-			{ test: /\.css$/, loaders: [
-				ExtractTextPlugin.loader({remove:true, extract: false}),
-				"style-loader",
-				ExtractTextPlugin.loader(),
-				"css-loader"
-			]}
+			{ test: /\.css$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader") }
 		]
 	},
 	plugins: [
@@ -32,7 +27,16 @@ new ExtractTextPlugin([id: string], filename: string, [options])
 * `options`
   * `allChunks` extract all chunks (by default only initial chunks)
 
-There is also a `loader` function on the instance. You should use this if you have more than one ExtractTextPlugin.
+``` javascript
+ExtractTextPlugin.extract([notExtractLoader], loader)
+```
+
+Creates an extracting loader from a existing loader.
+
+* `notExtractLoader` (optional) the loader(s) that should be used when the css is not extracted (i. e. in a additional chunk when `allChunks: false`)
+* `loader` the loader(s) that should be used for converting the resource to a css exporting module.
+
+There is also a `extract` function on the instance. You should use this if you have more than one ExtractTextPlugin.
 
 ## License
 

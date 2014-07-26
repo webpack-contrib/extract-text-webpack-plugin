@@ -51,7 +51,14 @@ module.exports.pitch = function(request, preReq, data) {
 			var source;
 			childCompiler.plugin("after-compile", function(compilation, callback) {
 				source = compilation.assets[childFilename] && compilation.assets[childFilename].source();
-				delete compilation.assets[childFilename];
+
+				// Remove all chunk assets
+				compilation.chunks.forEach(function(chunk) {
+					chunk.files.forEach(function(file) {
+						delete compilation.assets[file];
+					});
+				});
+
 				callback();
 			}.bind(this))
 			var callback = this.async();

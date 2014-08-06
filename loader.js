@@ -24,8 +24,7 @@ module.exports.pitch = function(request, preReq, data) {
 		if(query.remove) {
 			var resultSource = "// removed by extract-text-webpack-plugin";
 		} else {
-			var resultSource = "// text extracted by extract-text-webpack-plugin\n" +
-				"module.exports=\"\";";
+			var resultSource = undefined;
 		}
 
 		if(query.extract !== false) {
@@ -80,7 +79,10 @@ module.exports.pitch = function(request, preReq, data) {
 				} catch(e) {
 					return callback(e);
 				}
-				callback(null, resultSource);
+				if(resultSource)
+					callback(null, resultSource);
+				else
+					callback();
 			}.bind(this));
 		} else {
 			this[__dirname]("", query);

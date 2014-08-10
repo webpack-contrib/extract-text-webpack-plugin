@@ -77,10 +77,11 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 				return options.allChunks || module.meta[__dirname + "/extract"];
 			};
 		}.bind(this));
+		var texts;
 		var filename = this.filename;
 		var id = this.id;
 		compilation.plugin("optimize-tree", function(chunks, modules, callback) {
-			var texts = {};
+			texts = [];
 			async.forEach(chunks, function(chunk, callback) {
 				var shouldExtract = !!(options.allChunks || chunk.initial);
 				var text = [];
@@ -101,30 +102,44 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 									compilation.errors.push(err);
 									return callback();
 								}
-								text.push(meta.text);
+								if(meta.text) text.push(meta.text);
 								callback();
 							});
 						} else {
-							text.push(meta.text);
+							if(meta.text) text.push(meta.text);
 							callback();
 						}
 					} else callback();
 				}, function(err) {
 					if(err) return callback(err);
 					if(text.length > 0) {
-						var file = filename.replace(Template.REGEXP_NAME, chunk.name);
-						texts[file] = (texts[file] || []).concat(text);
+						texts.push({
+							chunk: chunk,
+							text: text
+						});
 					}
 					callback();
 				}.bind(this));
 			}.bind(this), function(err) {
 				if(err) return callback(err);
-				Object.keys(texts).forEach(function(file) {
-					var text = texts[file].join("");
-					this.assets[file] = new RawSource(text);
-				}.bind(this));
 				callback();
 			}.bind(this));
+		});
+		compilation.plugin("additional-assets", function(callback) {
+			var assetContents = {};
+			texts.forEach(function(item) {
+				var chunk = item.chunk;
+				var file = filename
+					.replace(Template.REGEXP_NAME, chunk.name || chunk.id)
+					.replace(Template.REGEXP_HASH, compilation.hash)
+					.replace(Template.REGEXP_CHUNKHASH, chunk.renderedHash);
+				assetContents[file] = (assetContents[file] || []).concat(item.text);
+			});
+			Object.keys(assetContents).forEach(function(file) {
+				var text = assetContents[file].join("");
+				this.assets[file] = new RawSource(text);
+			}.bind(this));
+			callback();
 		});
 	}.bind(this));
 };

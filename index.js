@@ -2,9 +2,12 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
-var RawSource = require("webpack/lib/RawSource");
+var SourceMapSource = require("webpack/lib/SourceMapSource");
 var Template = require("webpack/lib/Template");
 var async = require("async");
+var SourceNode = require("source-map").SourceNode;
+var SourceMapConsumer = require("source-map").SourceMapConsumer;
+var ModuleFilenameHelpers = require("webpack/lib/ModuleFilenameHelpers");
 
 var nextId = 0;
 
@@ -41,6 +44,17 @@ ExtractTextPlugin.extract = function(before, loader) {
 	}
 };
 
+ExtractTextPlugin.prototype.applyAdditionalInformation = function(node, info) {
+	if(info.length === 1 && info[0]) {
+		node = new SourceNode(null, null, null, [
+			"@media " + info[0] + " {",
+			node,
+			"}"
+		]);
+	}
+	return node;
+};
+
 ExtractTextPlugin.prototype.loader = function(options) {
 	options = JSON.parse(JSON.stringify(options || {}));
 	options.id = this.id;
@@ -67,28 +81,28 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 	var options = this.options;
 	compiler.plugin("this-compilation", function(compilation) {
 		compilation.plugin("normal-module-loader", function(loaderContext, module) {
-			loaderContext[__dirname] = function(text, opt) {
-				if(typeof text !== "string" && text !== null)
+			loaderContext[__dirname] = function(content, opt) {
+				if(!Array.isArray(content) && content !== null)
 					throw new Error("Exported value is not a string.");
 				module.meta[__dirname] = {
-					text: text,
+					content: content,
 					options: opt
 				};
 				return options.allChunks || module.meta[__dirname + "/extract"];
 			};
 		}.bind(this));
-		var texts;
+		var contents;
 		var filename = this.filename;
 		var id = this.id;
 		compilation.plugin("optimize-tree", function(chunks, modules, callback) {
-			texts = [];
+			contents = [];
 			async.forEach(chunks, function(chunk, callback) {
 				var shouldExtract = !!(options.allChunks || chunk.initial);
-				var text = [];
+				var content = [];
 				async.forEach(chunk.modules.slice(), function(module, callback) {
 					var meta = module.meta && module.meta[__dirname];
 					if(meta) {
-						var wasExtracted = typeof meta.text === "string";
+						var wasExtracted = Array.isArray(meta.content);
 						if(shouldExtract !== wasExtracted) {
 							module.meta[__dirname + "/extract"] = shouldExtract
 							compilation.rebuildModule(module, function(err) {
@@ -97,25 +111,25 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 									return callback();
 								}
 								meta = module.meta[__dirname];
-								if(typeof meta.text !== "string") {
-									var err = new Error(module.identifier() + " doesn't export text");
+								if(!Array.isArray(meta.content)) {
+									var err = new Error(module.identifier() + " doesn't export content");
 									compilation.errors.push(err);
 									return callback();
 								}
-								if(meta.text) text.push(meta.text);
+								if(meta.content) content.push(meta.content);
 								callback();
 							});
 						} else {
-							if(meta.text) text.push(meta.text);
+							if(meta.content) content.push(meta.content);
 							callback();
 						}
 					} else callback();
 				}, function(err) {
 					if(err) return callback(err);
-					if(text.length > 0) {
-						texts.push({
+					if(content.length > 0) {
+						contents.push({
 							chunk: chunk,
-							text: text
+							content: content
 						});
 					}
 					callback();
@@ -127,19 +141,35 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 		});
 		compilation.plugin("additional-assets", function(callback) {
 			var assetContents = {};
-			texts.forEach(function(item) {
+			contents.forEach(function(item) {
 				var chunk = item.chunk;
 				var file = filename
 					.replace(Template.REGEXP_NAME, chunk.name || chunk.id)
 					.replace(Template.REGEXP_HASH, compilation.hash)
 					.replace(Template.REGEXP_CHUNKHASH, chunk.renderedHash);
-				assetContents[file] = (assetContents[file] || []).concat(item.text);
+				assetContents[file] = (assetContents[file] || []).concat(item.content);
+				chunk.files.push(file);
 			});
 			Object.keys(assetContents).forEach(function(file) {
-				var text = assetContents[file].join("");
-				this.assets[file] = new RawSource(text);
+				var contained = {};
+				var content = assetContents[file].reduce(function(arr, items) {
+					return arr.concat(items);
+				}, []).filter(function(item) {
+					if(contained[item[0]]) return false;
+					contained[item[0]] = true;
+					return true;
+				}).map(function(item) {
+					var css = item[1];
+					var contents = item.slice(1).filter(function(i) { return typeof i === "string"; });
+					var sourceMap = typeof item[item.length-1] === "object" ? item[item.length-1] : undefined;
+					var text = contents.shift();
+					var node = sourceMap ? SourceNode.fromStringWithSourceMap(text, new SourceMapConsumer(sourceMap)) : new SourceNode(null, null, null, text);
+					return this.applyAdditionalInformation(node, contents);
+				}.bind(this));
+				var strAndMap = new SourceNode(null, null, null, content).toStringWithSourceMap();
+				compilation.assets[file] = new SourceMapSource(strAndMap.code, file, strAndMap.map.toJSON());
 			}.bind(this));
 			callback();
-		});
+		}.bind(this));
 	}.bind(this));
 };

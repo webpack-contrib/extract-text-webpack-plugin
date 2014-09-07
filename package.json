@@ -4,11 +4,12 @@
 	"author": "Tobias Koppers @sokra",
 	"description": "Extract text from bundle into a file.",
 	"peerDependencies": {
-		"webpack": "^1.3"
+		"webpack": "^1.4"
 	},
 	"dependencies": {
-		"async": "0.2.x",
-		"loader-utils": "0.2.x"
+		"async": "~0.2.10",
+		"source-map": "~0.1.38",
+		"loader-utils": "~0.2.3"
 	},
 	"devDependencies": {
 		"file-loader": "*",

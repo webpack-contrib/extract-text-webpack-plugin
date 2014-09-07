@@ -4,15 +4,15 @@ module.exports = {
 	output: {
 		filename: "bundle.js",
 		path: __dirname + "/assets",
-		publicPath: "assets/"
+		publicPath: "/assets/"
 	},
 	module: {
 		loaders: [
-			{ test: /\.css$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader")},
+			{ test: /\.css$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader?sourceMap")},
 			{ test: /\.png$/, loader: "file-loader" }
 		]
 	},
 	plugins: [
-		new ExtractTextPlugin("styles-[hash]-[chunkhash]-[name].css")
+		new ExtractTextPlugin("styles.css?[hash]-[chunkhash]-[name]")
 	]
 };

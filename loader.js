@@ -75,6 +75,15 @@ module.exports.pitch = function(request, preReq, data) {
 				}, this);
 				try {
 					var text = this.exec(source, request);
+					if(typeof text === "string")
+						text = [[0, text]];
+					text.forEach(function(item) {
+						var id = item[0];
+						compilation.modules.forEach(function(module) {
+							if(module.id === id)
+								item[0] = module.identifier();
+						});
+					});
 					this[__dirname](text, query);
 				} catch(e) {
 					return callback(e);

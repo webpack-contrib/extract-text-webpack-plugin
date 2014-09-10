@@ -143,10 +143,9 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 			var assetContents = {};
 			contents.forEach(function(item) {
 				var chunk = item.chunk;
-				var file = filename
-					.replace(Template.REGEXP_NAME, chunk.name || chunk.id)
-					.replace(Template.REGEXP_HASH, compilation.hash)
-					.replace(Template.REGEXP_CHUNKHASH, chunk.renderedHash);
+				var file = compilation.getPath(filename, {
+					chunk: chunk
+				});
 				assetContents[file] = (assetContents[file] || []).concat(item.content);
 				chunk.files.push(file);
 			});

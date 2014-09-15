@@ -17,7 +17,12 @@ module.exports.pitch = function(request, preReq, data) {
 	var query = loaderUtils.parseQuery(this.query);
 	this.addDependency(this.resourcePath);
 	// We already in child compiler, return empty bundle
-	if(this[__dirname] === false) {
+	if(this[__dirname] === undefined) {
+	  throw new Error(
+	    '"extract-text-webpack-plugin" loader is used without the corresponding plugin, ' +
+	    'refer to https://github.com/webpack/extract-text-webpack-plugin for the usage example'
+	  );
+  } else if(this[__dirname] === false) {
 		return "";
 	} else if(this[__dirname](null, query)) {
 		if(query.omit) {

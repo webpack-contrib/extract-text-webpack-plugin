@@ -16,7 +16,10 @@ module.exports.pitch = function(request, preReq, data) {
 	this.cacheable && this.cacheable();
 	var query = loaderUtils.parseQuery(this.query);
 	this.addDependency(this.resourcePath);
-	if(this[__dirname](null, query)) {
+	// We already in child compiler, return empty bundle
+	if(this[__dirname] === false) {
+		return "";
+	} else if(this[__dirname](null, query)) {
 		if(query.omit) {
 			this.loaderIndex += +query.omit + 1;
 			request = request.split("!").slice(+query.omit).join("!");
@@ -46,6 +49,13 @@ module.exports.pitch = function(request, preReq, data) {
 						compilation.cache[subCache] = {};
 					compilation.cache = compilation.cache[subCache];
 				}
+			});
+			// We set loaderContext[__dirname] = false to indicate we already in
+			// a child compiler so we don't spawn another child compilers from there.
+			childCompiler.plugin("this-compilation", function(compilation) {
+				compilation.plugin("normal-module-loader", function(loaderContext, module) {
+					loaderContext[__dirname] = false;
+				});
 			});
 			var source;
 			childCompiler.plugin("after-compile", function(compilation, callback) {

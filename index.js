@@ -2,12 +2,14 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
-var SourceMapSource = require("webpack/lib/SourceMapSource");
+var ConcatSource = require("webpack/lib/ConcatSource");
 var Template = require("webpack/lib/Template");
 var async = require("async");
 var SourceNode = require("source-map").SourceNode;
 var SourceMapConsumer = require("source-map").SourceMapConsumer;
 var ModuleFilenameHelpers = require("webpack/lib/ModuleFilenameHelpers");
+var ExtractedModule = require("./ExtractedModule");
+var Chunk = require("webpack/lib/Chunk");
 
 var nextId = 0;
 
@@ -21,6 +23,7 @@ function ExtractTextPlugin(id, filename, options) {
 	this.filename = filename;
 	this.options = options;
 	this.id = id;
+	this.modulesByIdentifier = {};
 }
 module.exports = ExtractTextPlugin;
 
@@ -44,15 +47,15 @@ ExtractTextPlugin.extract = function(before, loader) {
 	}
 };
 
-ExtractTextPlugin.prototype.applyAdditionalInformation = function(node, info) {
-	if(info.length === 1 && info[0]) {
-		node = new SourceNode(null, null, null, [
+ExtractTextPlugin.prototype.applyAdditionalInformation = function(source, info) {
+	if(info) {
+		return new ConcatSource(
 			"@media " + info[0] + " {",
-			node,
+			source,
 			"}"
-		]);
+		);
 	}
-	return node;
+	return source;
 };
 
 ExtractTextPlugin.prototype.loader = function(options) {
@@ -64,7 +67,7 @@ ExtractTextPlugin.prototype.loader = function(options) {
 ExtractTextPlugin.prototype.extract = function(before, loader) {
 	if(loader) {
 		return [
-			this.loader({move: before.split("!").length, extract: true, remove: true}),
+			this.loader({omit: before.split("!").length, extract: true, remove: true}),
 			before,
 			loader
 		].join("!");
@@ -82,6 +85,8 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 	compiler.plugin("this-compilation", function(compilation) {
 		compilation.plugin("normal-module-loader", function(loaderContext, module) {
 			loaderContext[__dirname] = function(content, opt) {
+				if(options.disable)
+					return false;
 				if(!Array.isArray(content) && content !== null)
 					throw new Error("Exported value is not a string.");
 				module.meta[__dirname] = {
@@ -94,11 +99,38 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 		var contents;
 		var filename = this.filename;
 		var id = this.id;
+		var extractedChunks, entryChunks;
+		compilation.plugin("optimize", function() {
+			entryChunks = compilation.chunks.filter(function(c) {
+				return c.entry;
+			});
+		}.bind(this));
 		compilation.plugin("optimize-tree", function(chunks, modules, callback) {
 			contents = [];
+			extractedChunks = chunks.map(function(chunk) {
+				return new Chunk();
+			});
+			chunks.forEach(function(chunk, i) {
+				var extractedChunk = extractedChunks[i];
+				extractedChunk.index = i;
+				extractedChunk.originalChunk = chunk;
+				extractedChunk.name = chunk.name;
+				chunk.chunks.forEach(function(c) {
+					extractedChunk.addChunk(extractedChunks[chunks.indexOf(c)]);
+				});
+				chunk.parents.forEach(function(c) {
+					extractedChunk.addParent(extractedChunks[chunks.indexOf(c)]);
+				});
+			});
+			entryChunks.forEach(function(chunk) {
+				var idx = chunks.indexOf(chunk);
+				if(idx < 0) return;
+				var extractedChunk = extractedChunks[idx];
+				extractedChunk.entry = extractedChunk.initial = true;
+			});
 			async.forEach(chunks, function(chunk, callback) {
+				var extractedChunk = extractedChunks[chunks.indexOf(chunk)];
 				var shouldExtract = !!(options.allChunks || chunk.initial);
-				var content = [];
 				async.forEach(chunk.modules.slice(), function(module, callback) {
 					var meta = module.meta && module.meta[__dirname];
 					if(meta) {
@@ -116,59 +148,89 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 									compilation.errors.push(err);
 									return callback();
 								}
-								if(meta.content) content.push(meta.content);
+								if(meta.content)
+									this.addResultToChunk(module.identifier(), meta.content, extractedChunk);
 								callback();
-							});
+							}.bind(this));
 						} else {
-							if(meta.content) content.push(meta.content);
+							if(meta.content)
+								this.addResultToChunk(module.identifier(), meta.content, extractedChunk);
 							callback();
 						}
 					} else callback();
-				}, function(err) {
+				}.bind(this), function(err) {
 					if(err) return callback(err);
-					if(content.length > 0) {
-						contents.push({
-							chunk: chunk,
-							content: content
-						});
-					}
 					callback();
 				}.bind(this));
 			}.bind(this), function(err) {
 				if(err) return callback(err);
+				extractedChunks.forEach(function(extractedChunk) {
+					if(extractedChunk.initial)
+						this.mergeNonInitialChunks(extractedChunk);
+				}, this);
+				compilation.applyPlugins("optimize-extracted-chunks", extractedChunks);
 				callback();
 			}.bind(this));
-		});
+		}.bind(this));
 		compilation.plugin("additional-assets", function(callback) {
 			var assetContents = {};
-			contents.forEach(function(item) {
-				var chunk = item.chunk;
-				var file = compilation.getPath(filename, {
-					chunk: chunk
-				});
-				assetContents[file] = (assetContents[file] || []).concat(item.content);
-				chunk.files.push(file);
-			});
-			Object.keys(assetContents).forEach(function(file) {
-				var contained = {};
-				var content = assetContents[file].reduce(function(arr, items) {
-					return arr.concat(items);
-				}, []).filter(function(item) {
-					if(contained[item[0]]) return false;
-					contained[item[0]] = true;
-					return true;
-				}).map(function(item) {
-					var css = item[1];
-					var contents = item.slice(1).filter(function(i) { return typeof i === "string"; });
-					var sourceMap = typeof item[item.length-1] === "object" ? item[item.length-1] : undefined;
-					var text = contents.shift();
-					var node = sourceMap ? SourceNode.fromStringWithSourceMap(text, new SourceMapConsumer(sourceMap)) : new SourceNode(null, null, null, text);
-					return this.applyAdditionalInformation(node, contents);
-				}.bind(this));
-				var strAndMap = new SourceNode(null, null, null, content).toStringWithSourceMap();
-				compilation.assets[file] = new SourceMapSource(strAndMap.code, file, strAndMap.map.toJSON());
-			}.bind(this));
+			extractedChunks.forEach(function(extractedChunk) {
+				if(extractedChunk.modules.length) {
+					var chunk = extractedChunk.originalChunk;
+					var file = compilation.getPath(filename, {
+						chunk: chunk
+					});
+					compilation.assets[file] = this.renderExtractedChunk(extractedChunk);
+					chunk.files.push(file);
+				}
+			}, this);
 			callback();
 		}.bind(this));
 	}.bind(this));
+};
+
+ExtractTextPlugin.prototype.mergeNonInitialChunks = function(chunk, intoChunk, checkedChunks) {
+	if(!intoChunk) {
+		checkedChunks = [];
+		chunk.chunks.forEach(function(c) {
+			if(c.initial) return;
+			this.mergeNonInitialChunks(c, chunk, checkedChunks);
+		}, this);
+	} else if(checkedChunks.indexOf(chunk) < 0) {
+		checkedChunks.push(chunk);
+		chunk.modules.slice().forEach(function(module) {
+			chunk.removeModule(module);
+			intoChunk.addModule(module);
+			module.addChunk(intoChunk);
+		});
+		chunk.chunks.forEach(function(c) {
+			if(c.initial) return;
+			this.mergeNonInitialChunks(c, intoChunk, checkedChunks);
+		}, this);
+	}
+};
+
+ExtractTextPlugin.prototype.addModule = function(identifier, source, sourceMap, additionalInformation) {
+	if(!this.modulesByIdentifier[identifier])
+		return this.modulesByIdentifier[identifier] = new ExtractedModule(identifier, source, sourceMap, additionalInformation);
+	return this.modulesByIdentifier[identifier];
+};
+
+ExtractTextPlugin.prototype.addResultToChunk = function(identifier, result, extractedChunk) {
+	if(!Array.isArray(result)) {
+		result = [[identifier, result]];
+	}
+	result.forEach(function(item) {
+		var module = this.addModule.apply(this, item);
+		extractedChunk.addModule(module);
+		module.addChunk(extractedChunk);
+	}, this);
+};
+
+ExtractTextPlugin.prototype.renderExtractedChunk = function(chunk) {
+	var source = new ConcatSource();
+	chunk.modules.forEach(function(module) {
+		source.add(this.applyAdditionalInformation(module.source(), module.additionalInformation));
+	}, this);
+	return source;
 };

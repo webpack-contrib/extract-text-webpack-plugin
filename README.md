@@ -16,6 +16,23 @@ module.exports = {
 }
 ```
 
+It moves every `require("style.css")` in entry chunks into a separate css output file. So your styles are no longer inlined into the javascript, but separate in a css bundle file (`styles.css`). If your total stylesheet volume is big, it will be faster because the stylesheet bundle is loaded in parallel to the javascript bundle.
+
+Advantages:
+
+* Fewer style tags (older IE has a limit)
+* CSS SourceMap (with `devtool: "sourcemap"`)
+* CSS requested in parallel
+* CSS cached separate
+* Faster runtime (less code and DOM operations)
+
+Caveats:
+
+* Additional HTTP request
+* Longer compilation time
+* Complexer configuration
+* No runtime public path modification
+
 ## API
 
 ``` javascript

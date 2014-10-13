@@ -27,21 +27,29 @@ function ExtractTextPlugin(id, filename, options) {
 }
 module.exports = ExtractTextPlugin;
 
+function mergeOptions(a, b) {
+	if(!b) return a;
+	Object.keys(b).forEach(function(key) {
+		a[key] = b[key];
+	});
+	return a;
+};
+
 ExtractTextPlugin.loader = function(options) {
 	return require.resolve("./loader") + (options ? "?" + JSON.stringify(options) : "");
 };
 
-ExtractTextPlugin.extract = function(before, loader) {
-	if(loader) {
+ExtractTextPlugin.extract = function(before, loader, options) {
+	if(typeof loader === "string") {
 		return [
-			ExtractTextPlugin.loader({omit: before.split("!").length, extract: true, remove: true}),
+			ExtractTextPlugin.loader(mergeOptions({omit: before.split("!").length, extract: true, remove: true}, options)),
 			before,
 			loader
 		].join("!");
 	} else {
 		loader = before;
 		return [
-			ExtractTextPlugin.loader({remove: true}),
+			ExtractTextPlugin.loader(mergeOptions({remove: true}, options)),
 			loader
 		].join("!");
 	}
@@ -64,17 +72,17 @@ ExtractTextPlugin.prototype.loader = function(options) {
 	return ExtractTextPlugin.loader(options);
 };
 
-ExtractTextPlugin.prototype.extract = function(before, loader) {
-	if(loader) {
+ExtractTextPlugin.prototype.extract = function(before, loader, options) {
+	if(typeof loader === "string") {
 		return [
-			this.loader({omit: before.split("!").length, extract: true, remove: true}),
+			this.loader(mergeOptions({omit: before.split("!").length, extract: true, remove: true}, options)),
 			before,
 			loader
 		].join("!");
 	} else {
 		loader = before;
 		return [
-			this.loader({remove: true}),
+			this.loader(mergeOptions({remove: true}, options)),
 			loader
 		].join("!");
 	}

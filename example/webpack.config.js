@@ -15,13 +15,16 @@ module.exports = {
 		loaders: [
 			{ test: /\.css$/, loader: ExtractTextPlugin.extract(
 				"style-loader",
-				"css-loader?sourceMap"
+				"css-loader?sourceMap",
+				{
+					publicPath: "../"
+				}
 			)},
 			{ test: /\.png$/, loader: "file-loader" }
 		]
 	},
 	plugins: [
-		new ExtractTextPlugin("[name].css?[hash]-[chunkhash]-[name]", {
+		new ExtractTextPlugin("css/[name].css?[hash]-[chunkhash]-[name]", {
 			disable: false,
 			allChunks: true
 		}),

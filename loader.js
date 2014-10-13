@@ -37,9 +37,10 @@ module.exports.pitch = function(request, preReq, data) {
 
 		if(query.extract !== false) {
 			var childFilename = __dirname + " " + request;
+			var publicPath = typeof query.publicPath === "string" ? query.publicPath : this._compilation.outputOptions.publicPath
 			var outputOptions = {
 				filename: childFilename,
-				publicPath: this._compilation.outputOptions.publicPath
+				publicPath: publicPath
 			};
 			var childCompiler = this._compilation.createChildCompiler("extract-text-webpack-plugin", outputOptions);
 			childCompiler.apply(new NodeTemplatePlugin(outputOptions));

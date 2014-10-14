@@ -21,7 +21,7 @@ It moves every `require("style.css")` in entry chunks into a separate css output
 Advantages:
 
 * Fewer style tags (older IE has a limit)
-* CSS SourceMap (with `devtool: "sourcemap"`)
+* CSS SourceMap (with `devtool: "sourcemap"` and `css-loader?sourceMap`)
 * CSS requested in parallel
 * CSS cached separate
 * Faster runtime (less code and DOM operations)
@@ -32,6 +32,7 @@ Caveats:
 * Longer compilation time
 * Complexer configuration
 * No runtime public path modification
+* No Hot Module Replacement
 
 ## API
 
@@ -43,15 +44,18 @@ new ExtractTextPlugin([id: string], filename: string, [options])
 * `filename` the filename of the result file. May contain `[name]`.
 * `options`
   * `allChunks` extract all chunks (by default only initial chunks)
+  * `disable` disables the plugin
 
 ``` javascript
-ExtractTextPlugin.extract([notExtractLoader], loader)
+ExtractTextPlugin.extract([notExtractLoader], loader, [options])
 ```
 
 Creates an extracting loader from a existing loader.
 
 * `notExtractLoader` (optional) the loader(s) that should be used when the css is not extracted (i. e. in a additional chunk when `allChunks: false`)
 * `loader` the loader(s) that should be used for converting the resource to a css exporting module.
+* `options`
+  * `publicPath` override the `publicPath` setting for this loader.
 
 There is also a `extract` function on the instance. You should use this if you have more than one ExtractTextPlugin.
 

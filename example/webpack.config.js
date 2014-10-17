@@ -6,8 +6,8 @@ module.exports = {
 		b: "./entry2.js"
 	},
 	output: {
-		filename: "[name].js",
-		chunkFilename: "[name].js",
+		filename: "[name].js?[hash]-[chunkhash]",
+		chunkFilename: "[name].js?[hash]-[chunkhash]",
 		path: __dirname + "/assets",
 		publicPath: "/assets/"
 	},
@@ -23,8 +23,9 @@ module.exports = {
 			{ test: /\.png$/, loader: "file-loader" }
 		]
 	},
+	devtool: "sourcemap",
 	plugins: [
-		new ExtractTextPlugin("css/[name].css?[hash]-[chunkhash]-[name]", {
+		new ExtractTextPlugin("css/[name].css?[hash]-[chunkhash]-[contenthash]-[name]", {
 			disable: false,
 			allChunks: true
 		}),

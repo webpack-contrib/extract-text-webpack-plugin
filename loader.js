@@ -80,15 +80,15 @@ module.exports.pitch = function(request, preReq, data) {
 			childCompiler.runAsChild(function(err, entries, compilation) {
 				if(err) return callback(err);
 
-				if(!source) {
-					return callback(new Error("Didn't get a result from child compiler"));
-				}
 				compilation.fileDependencies.forEach(function(dep) {
 					this.addDependency(dep);
 				}, this);
 				compilation.contextDependencies.forEach(function(dep) {
 					this.addContextDependency(dep);
 				}, this);
+				if(!source) {
+					return callback(new Error("Didn't get a result from child compiler"));
+				}
 				try {
 					var text = this.exec(source, request);
 					if(typeof text === "string")

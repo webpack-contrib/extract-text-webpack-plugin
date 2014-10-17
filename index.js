@@ -10,6 +10,7 @@ var SourceMapConsumer = require("source-map").SourceMapConsumer;
 var ModuleFilenameHelpers = require("webpack/lib/ModuleFilenameHelpers");
 var ExtractedModule = require("./ExtractedModule");
 var Chunk = require("webpack/lib/Chunk");
+var loaderUtils = require("loader-utils");
 
 var nextId = 0;
 
@@ -185,10 +186,14 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 			extractedChunks.forEach(function(extractedChunk) {
 				if(extractedChunk.modules.length) {
 					var chunk = extractedChunk.originalChunk;
+					var source = this.renderExtractedChunk(extractedChunk);
+					console.log(source._node.toStringWithSourceMap({file: "x"}));
 					var file = compilation.getPath(filename, {
 						chunk: chunk
+					}).replace(/\[(?:(\w+):)?contenthash(?::([a-z]+\d*))?(?::(\d+))?\]/ig, function() {
+						return loaderUtils.getHashDigest(source.source(), arguments[1], arguments[2], parseInt(arguments[3], 10));
 					});
-					compilation.assets[file] = this.renderExtractedChunk(extractedChunk);
+					compilation.assets[file] = source;
 					chunk.files.push(file);
 				}
 			}, this);
@@ -218,7 +223,7 @@ ExtractTextPlugin.prototype.mergeNonInitialChunks = function(chunk, intoChunk, c
 	}
 };
 
-ExtractTextPlugin.prototype.addModule = function(identifier, source, sourceMap, additionalInformation) {
+ExtractTextPlugin.prototype.addModule = function(identifier, source, additionalInformation, sourceMap) {
 	if(!this.modulesByIdentifier[identifier])
 		return this.modulesByIdentifier[identifier] = new ExtractedModule(identifier, source, sourceMap, additionalInformation);
 	return this.modulesByIdentifier[identifier];

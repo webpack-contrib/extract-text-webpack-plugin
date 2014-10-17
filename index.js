@@ -187,7 +187,6 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 				if(extractedChunk.modules.length) {
 					var chunk = extractedChunk.originalChunk;
 					var source = this.renderExtractedChunk(extractedChunk);
-					console.log(source._node.toStringWithSourceMap({file: "x"}));
 					var file = compilation.getPath(filename, {
 						chunk: chunk
 					}).replace(/\[(?:(\w+):)?contenthash(?::([a-z]+\d*))?(?::(\d+))?\]/ig, function() {

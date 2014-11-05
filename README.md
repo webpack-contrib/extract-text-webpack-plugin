@@ -41,7 +41,10 @@ new ExtractTextPlugin([id: string], filename: string, [options])
 ```
 
 * `id` Unique ident for this plugin instance. (For advanded usage only)
-* `filename` the filename of the result file. May contain `[name]`.
+* `filename` the filename of the result file. May contain `[name]`, `[id]` and `[contenthash]`.
+  * `[name]` the name of the chunk
+  * `[id]` the number of the chunk
+  * `[contenthash]` a hash of the content of the extracted file
 * `options`
   * `allChunks` extract all chunks (by default only initial chunks)
   * `disable` disables the plugin

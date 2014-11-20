@@ -47,6 +47,7 @@ ExtractTextPlugin.extract = function(before, loader, options) {
 			loader
 		].join("!");
 	} else {
+		options = loader;
 		loader = before;
 		return [
 			ExtractTextPlugin.loader(mergeOptions({remove: true}, options)),
@@ -80,6 +81,7 @@ ExtractTextPlugin.prototype.extract = function(before, loader, options) {
 			loader
 		].join("!");
 	} else {
+		options = loader;
 		loader = before;
 		return [
 			this.loader(mergeOptions({remove: true}, options)),

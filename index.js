@@ -110,10 +110,13 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 		var contents;
 		var filename = this.filename;
 		var id = this.id;
-		var extractedChunks, entryChunks;
+		var extractedChunks, entryChunks, initialChunks;
 		compilation.plugin("optimize", function() {
 			entryChunks = compilation.chunks.filter(function(c) {
 				return c.entry;
+			});
+			initialChunks = compilation.chunks.filter(function(c) {
+				return c.initial;
 			});
 		}.bind(this));
 		compilation.plugin("optimize-tree", function(chunks, modules, callback) {
@@ -137,7 +140,13 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 				var idx = chunks.indexOf(chunk);
 				if(idx < 0) return;
 				var extractedChunk = extractedChunks[idx];
-				extractedChunk.entry = extractedChunk.initial = true;
+				extractedChunk.entry = true;
+			});
+			initialChunks.forEach(function(chunk) {
+				var idx = chunks.indexOf(chunk);
+				if(idx < 0) return;
+				var extractedChunk = extractedChunks[idx];
+				extractedChunk.initial = true;
 			});
 			async.forEach(chunks, function(chunk, callback) {
 				var extractedChunk = extractedChunks[chunks.indexOf(chunk)];

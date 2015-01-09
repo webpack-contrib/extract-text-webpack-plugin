@@ -40,14 +40,16 @@ Caveats:
 new ExtractTextPlugin([id: string], filename: string, [options])
 ```
 
-* `id` Unique ident for this plugin instance. (For advanded usage only)
+* `id` Unique ident for this plugin instance. (For advanded usage only, by default automatic generated)
 * `filename` the filename of the result file. May contain `[name]`, `[id]` and `[contenthash]`.
   * `[name]` the name of the chunk
   * `[id]` the number of the chunk
   * `[contenthash]` a hash of the content of the extracted file
 * `options`
-  * `allChunks` extract all chunks (by default only initial chunks)
+  * `allChunks` extract from all additional chunks too (by default it extracts only from the initial chunk(s))
   * `disable` disables the plugin
+
+The `ExtractTextPlugin` generates an output file per entry, so you must use `[name]`, `[id]` or `[contenthash]` when using multiple entries.
 
 ``` javascript
 ExtractTextPlugin.extract([notExtractLoader], loader, [options])

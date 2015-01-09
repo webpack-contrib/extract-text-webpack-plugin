@@ -102,7 +102,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 					throw new Error("Exported value is not a string.");
 				module.meta[__dirname] = {
 					content: content,
-					options: opt
+					options: opt || {}
 				};
 				return options.allChunks || module.meta[__dirname + "/extract"];
 			};
@@ -153,7 +153,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 				var shouldExtract = !!(options.allChunks || chunk.initial);
 				async.forEach(chunk.modules.slice(), function(module, callback) {
 					var meta = module.meta && module.meta[__dirname];
-					if(meta) {
+					if(meta && (!meta.options.id || meta.options.id === id)) {
 						var wasExtracted = Array.isArray(meta.content);
 						if(shouldExtract !== wasExtracted) {
 							module.meta[__dirname + "/extract"] = shouldExtract

@@ -247,10 +247,15 @@ ExtractTextPluginCompilation.prototype.addResultToChunk = function(identifier, r
 	if(!Array.isArray(result)) {
 		result = [[identifier, result]];
 	}
+	var counterMap = {};
 	result.forEach(function(item) {
-		var module = this.addModule.apply(this, item);
+		var c = counterMap[item[0]];
+		var i = item.slice();
+		i[0] = item[0] + (c || "");
+		var module = this.addModule.apply(this, i);
 		extractedChunk.addModule(module);
 		module.addChunk(extractedChunk);
+		counterMap[item[0]] = (c || 0) + 1;
 	}, this);
 };
 

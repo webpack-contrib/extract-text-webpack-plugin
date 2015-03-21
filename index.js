@@ -169,12 +169,12 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 									return callback();
 								}
 								if(meta.content)
-									extractCompilation.addResultToChunk(module.identifier(), meta.content, extractedChunk);
+									extractCompilation.addResultToChunk(module.identifier(), meta.content, module, extractedChunk);
 								callback();
 							}.bind(this));
 						} else {
 							if(meta.content)
-								extractCompilation.addResultToChunk(module.identifier(), meta.content, extractedChunk);
+								extractCompilation.addResultToChunk(module.identifier(), meta.content, module, extractedChunk);
 							callback();
 						}
 					} else callback();
@@ -196,6 +196,15 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 			var assetContents = {};
 			extractedChunks.forEach(function(extractedChunk) {
 				if(extractedChunk.modules.length) {
+					extractedChunk.modules.sort(function(a, b) {
+						var ai = a.identifier();
+						var bi = b.identifier();
+						if(ai < bi)
+							return -1;
+						if(ai > bi)
+							return 1;
+						return 0;
+					});
 					var chunk = extractedChunk.originalChunk;
 					var source = this.renderExtractedChunk(extractedChunk);
 					var file = compilation.getPath(filename, {
@@ -237,13 +246,13 @@ ExtractTextPlugin.prototype.mergeNonInitialChunks = function(chunk, intoChunk, c
 	}
 };
 
-ExtractTextPluginCompilation.prototype.addModule = function(identifier, source, additionalInformation, sourceMap) {
+ExtractTextPluginCompilation.prototype.addModule = function(identifier, originalModule, source, additionalInformation, sourceMap) {
 	if(!this.modulesByIdentifier[identifier])
-		return this.modulesByIdentifier[identifier] = new ExtractedModule(identifier, source, sourceMap, additionalInformation);
+		return this.modulesByIdentifier[identifier] = new ExtractedModule(identifier, originalModule, source, sourceMap, additionalInformation);
 	return this.modulesByIdentifier[identifier];
 };
 
-ExtractTextPluginCompilation.prototype.addResultToChunk = function(identifier, result, extractedChunk) {
+ExtractTextPluginCompilation.prototype.addResultToChunk = function(identifier, result, originalModule, extractedChunk) {
 	if(!Array.isArray(result)) {
 		result = [[identifier, result]];
 	}
@@ -251,8 +260,7 @@ ExtractTextPluginCompilation.prototype.addResultToChunk = function(identifier, r
 	result.forEach(function(item) {
 		var c = counterMap[item[0]];
 		var i = item.slice();
-		i[0] = item[0] + (c || "");
-		var module = this.addModule.apply(this, i);
+		var module = this.addModule.call(this, item[0] + (c || ""), originalModule, item[1], item[2], item[3]);
 		extractedChunk.addModule(module);
 		module.addChunk(extractedChunk);
 		counterMap[item[0]] = (c || 0) + 1;

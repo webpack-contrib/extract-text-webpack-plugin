@@ -5,8 +5,9 @@
 var SourceMapSource = require("webpack/lib/SourceMapSource");
 var RawSource = require("webpack/lib/RawSource");
 
-function ExtractedModule(identifier, source, sourceMap, addtitionalInformation) {
+function ExtractedModule(identifier, originalModule, source, sourceMap, addtitionalInformation) {
 	this._identifier = identifier;
+	this._originalModule = originalModule;
 	this._source = source;
 	this._sourceMap = sourceMap;
 	this.addtitionalInformation = addtitionalInformation;

@@ -5,11 +5,12 @@
 var SourceMapSource = require("webpack/lib/SourceMapSource");
 var RawSource = require("webpack/lib/RawSource");
 
-function ExtractedModule(identifier, originalModule, source, sourceMap, addtitionalInformation) {
+function ExtractedModule(identifier, originalModule, source, sourceMap, addtitionalInformation, prevModules) {
 	this._identifier = identifier;
 	this._originalModule = originalModule;
 	this._source = source;
 	this._sourceMap = sourceMap;
+	this._prevModules = prevModules;
 	this.addtitionalInformation = addtitionalInformation;
 	this.chunks = [];
 }
@@ -38,4 +39,19 @@ ExtractedModule.prototype.source = function() {
 		return new SourceMapSource(this._source, null, this._sourceMap);
 	else
 		return new RawSource(this._source);
+};
+
+ExtractedModule.prototype.getOriginalModule = function() {
+	return this._originalModule;
+};
+
+ExtractedModule.prototype.getPrevModules = function() {
+	return this._prevModules;
+}
+
+ExtractedModule.prototype.addPrevModules = function(prevModules) {
+	prevModules.forEach(function(m) {
+		if(this._prevModules.indexOf(m) < 0)
+			this._prevModules.push(m);
+	}, this);
 };

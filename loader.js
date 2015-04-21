@@ -101,6 +101,9 @@ module.exports.pitch = function(request, preReq, data) {
 						});
 					});
 					this[__dirname](text, query);
+					if(text.placeholders && typeof resultSource !== "undefined") {
+						resultSource += "\nmodule.exports = " + JSON.stringify(text.placeholders) + ";";
+					}
 				} catch(e) {
 					return callback(e);
 				}

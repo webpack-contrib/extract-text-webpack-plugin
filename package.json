@@ -1,6 +1,6 @@
 {
   "name": "extract-text-webpack-plugin",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "author": "Tobias Koppers @sokra",
   "description": "Extract text from bundle into a file.",
   "peerDependencies": {

@@ -3,17 +3,85 @@
 	Author Tobias Koppers @sokra
 */
 var ConcatSource = require("webpack/lib/ConcatSource");
-var Template = require("webpack/lib/Template");
 var async = require("async");
-var SourceNode = require("source-map").SourceNode;
-var SourceMapConsumer = require("source-map").SourceMapConsumer;
-var ModuleFilenameHelpers = require("webpack/lib/ModuleFilenameHelpers");
 var ExtractedModule = require("./ExtractedModule");
 var Chunk = require("webpack/lib/Chunk");
 var OrderUndefinedError = require("./OrderUndefinedError");
 var loaderUtils = require("loader-utils");
 
 var nextId = 0;
+
+function ExtractTextPluginCompilation() {
+	this.modulesByIdentifier = {};
+}
+
+ExtractTextPlugin.prototype.mergeNonInitialChunks = function(chunk, intoChunk, checkedChunks) {
+	if(!intoChunk) {
+		checkedChunks = [];
+		chunk.chunks.forEach(function(c) {
+			if(c.initial) return;
+			this.mergeNonInitialChunks(c, chunk, checkedChunks);
+		}, this);
+	} else if(checkedChunks.indexOf(chunk) < 0) {
+		checkedChunks.push(chunk);
+		chunk.modules.slice().forEach(function(module) {
+			chunk.removeModule(module);
+			intoChunk.addModule(module);
+			module.addChunk(intoChunk);
+		});
+		chunk.chunks.forEach(function(c) {
+			if(c.initial) return;
+			this.mergeNonInitialChunks(c, intoChunk, checkedChunks);
+		}, this);
+	}
+};
+
+ExtractTextPluginCompilation.prototype.addModule = function(identifier, originalModule, source, additionalInformation, sourceMap, prevModules) {
+	var m;
+	if(!this.modulesByIdentifier[identifier]) {
+		m = this.modulesByIdentifier[identifier] = new ExtractedModule(identifier, originalModule, source, sourceMap, additionalInformation, prevModules);
+	} else {
+		m = this.modulesByIdentifier[identifier];
+		m.addPrevModules(prevModules);
+	}
+	return m;
+};
+
+ExtractTextPluginCompilation.prototype.addResultToChunk = function(identifier, result, originalModule, extractedChunk) {
+	if(!Array.isArray(result)) {
+		result = [[identifier, result]];
+	}
+	var counterMap = {};
+	var prevModules = [];
+	result.forEach(function(item) {
+		var c = counterMap[item[0]];
+		var module = this.addModule.call(this, item[0] + (c || ""), originalModule, item[1], item[2], item[3], prevModules.slice());
+		extractedChunk.addModule(module);
+		module.addChunk(extractedChunk);
+		counterMap[item[0]] = (c || 0) + 1;
+		prevModules.push(module);
+	}, this);
+};
+
+ExtractTextPlugin.prototype.renderExtractedChunk = function(chunk) {
+	var source = new ConcatSource();
+	chunk.modules.forEach(function(module) {
+		source.add(this.applyAdditionalInformation(module.source(), module.additionalInformation));
+	}, this);
+	return source;
+};
+
+function getOrder(a, b) {
+	var bBeforeA = a.getPrevModules().indexOf(b) >= 0;
+	var aBeforeB = b.getPrevModules().indexOf(a) >= 0;
+	if(aBeforeB && bBeforeA)
+		return NaN;
+	if(bBeforeA)
+		return 1;
+	if(aBeforeB)
+		return -1;
+	return 0;
+}
 
 function ExtractTextPlugin(id, filename, options) {
 	if(typeof filename !== "string") {
@@ -34,7 +102,7 @@ function mergeOptions(a, b) {
 		a[key] = b[key];
 	});
 	return a;
-};
+}
 
 ExtractTextPlugin.loader = function(options) {
 	return require.resolve("./loader") + (options ? "?" + JSON.stringify(options) : "");
@@ -105,10 +173,9 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 					content: content,
 					options: opt || {}
 				};
-				return options.allChunks || module.meta[__dirname + "/extract"];
+				return options.allChunks || module.meta[__dirname + "/extract"]; // eslint-disable-line no-path-concat
 			};
-		}.bind(this));
-		var contents;
+		});
 		var filename = this.filename;
 		var id = this.id;
 		var extractedChunks, entryChunks, initialChunks;
@@ -119,10 +186,9 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 			initialChunks = compilation.chunks.filter(function(c) {
 				return c.initial;
 			});
-		}.bind(this));
+		});
 		compilation.plugin("optimize-tree", function(chunks, modules, callback) {
-			contents = [];
-			extractedChunks = chunks.map(function(chunk) {
+			extractedChunks = chunks.map(function() {
 				return new Chunk();
 			});
 			chunks.forEach(function(chunk, i) {
@@ -157,7 +223,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 					if(meta && (!meta.options.id || meta.options.id === id)) {
 						var wasExtracted = Array.isArray(meta.content);
 						if(shouldExtract !== wasExtracted) {
-							module.meta[__dirname + "/extract"] = shouldExtract
+							module.meta[__dirname + "/extract"] = shouldExtract; // eslint-disable-line no-path-concat
 							compilation.rebuildModule(module, function(err) {
 								if(err) {
 									compilation.errors.push(err);
@@ -165,25 +231,25 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 								}
 								meta = module.meta[__dirname];
 								if(!Array.isArray(meta.content)) {
-									var err = new Error(module.identifier() + " doesn't export content");
+									err = new Error(module.identifier() + " doesn't export content");
 									compilation.errors.push(err);
 									return callback();
 								}
 								if(meta.content)
 									extractCompilation.addResultToChunk(module.identifier(), meta.content, module, extractedChunk);
 								callback();
-							}.bind(this));
+							});
 						} else {
 							if(meta.content)
 								extractCompilation.addResultToChunk(module.identifier(), meta.content, module, extractedChunk);
 							callback();
 						}
 					} else callback();
-				}.bind(this), function(err) {
+				}, function(err) {
 					if(err) return callback(err);
 					callback();
-				}.bind(this));
-			}.bind(this), function(err) {
+				});
+			}, function(err) {
 				if(err) return callback(err);
 				extractedChunks.forEach(function(extractedChunk) {
 					if(extractedChunk.initial)
@@ -194,7 +260,6 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 			}.bind(this));
 		}.bind(this));
 		compilation.plugin("additional-assets", function(callback) {
-			var assetContents = {};
 			extractedChunks.forEach(function(extractedChunk) {
 				if(extractedChunk.modules.length) {
 					extractedChunk.modules.sort(function(a, b) {
@@ -228,73 +293,3 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 		}.bind(this));
 	}.bind(this));
 };
-
-function ExtractTextPluginCompilation() {
-	this.modulesByIdentifier = {};
-}
-
-ExtractTextPlugin.prototype.mergeNonInitialChunks = function(chunk, intoChunk, checkedChunks) {
-	if(!intoChunk) {
-		checkedChunks = [];
-		chunk.chunks.forEach(function(c) {
-			if(c.initial) return;
-			this.mergeNonInitialChunks(c, chunk, checkedChunks);
-		}, this);
-	} else if(checkedChunks.indexOf(chunk) < 0) {
-		checkedChunks.push(chunk);
-		chunk.modules.slice().forEach(function(module) {
-			chunk.removeModule(module);
-			intoChunk.addModule(module);
-			module.addChunk(intoChunk);
-		});
-		chunk.chunks.forEach(function(c) {
-			if(c.initial) return;
-			this.mergeNonInitialChunks(c, intoChunk, checkedChunks);
-		}, this);
-	}
-};
-
-ExtractTextPluginCompilation.prototype.addModule = function(identifier, originalModule, source, additionalInformation, sourceMap, prevModules) {
-	if(!this.modulesByIdentifier[identifier])
-		return this.modulesByIdentifier[identifier] = new ExtractedModule(identifier, originalModule, source, sourceMap, additionalInformation, prevModules);
-	var m = this.modulesByIdentifier[identifier];
-	m.addPrevModules(prevModules);
-	return m;
-};
-
-ExtractTextPluginCompilation.prototype.addResultToChunk = function(identifier, result, originalModule, extractedChunk) {
-	if(!Array.isArray(result)) {
-		result = [[identifier, result]];
-	}
-	var counterMap = {};
-	var prevModules = [];
-	result.forEach(function(item) {
-		var c = counterMap[item[0]];
-		var i = item.slice();
-		var module = this.addModule.call(this, item[0] + (c || ""), originalModule, item[1], item[2], item[3], prevModules.slice());
-		extractedChunk.addModule(module);
-		module.addChunk(extractedChunk);
-		counterMap[item[0]] = (c || 0) + 1;
-		prevModules.push(module);
-	}, this);
-};
-
-ExtractTextPlugin.prototype.renderExtractedChunk = function(chunk) {
-	var source = new ConcatSource();
-	chunk.modules.forEach(function(module) {
-		source.add(this.applyAdditionalInformation(module.source(), module.additionalInformation));
-	}, this);
-	return source;
-};
-
-function getOrder(a, b) {
-	var bBeforeA = a.getPrevModules().indexOf(b) >= 0;
-	var aBeforeB = b.getPrevModules().indexOf(a) >= 0;
-	if(aBeforeB && bBeforeA)
-		return NaN;
-	if(bBeforeA)
-		return 1;
-	if(aBeforeB)
-		return -1;
-	return 0;
-}

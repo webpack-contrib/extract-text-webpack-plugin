@@ -9,11 +9,11 @@ var LibraryTemplatePlugin = require("webpack/lib/LibraryTemplatePlugin");
 var SingleEntryPlugin = require("webpack/lib/SingleEntryPlugin");
 var LimitChunkCountPlugin = require("webpack/lib/optimize/LimitChunkCountPlugin");
 module.exports = function(source) {
-	this.cacheable && this.cacheable();
+	if(this.cacheable) this.cacheable();
 	return source;
 };
-module.exports.pitch = function(request, preReq, data) {
-	this.cacheable && this.cacheable();
+module.exports.pitch = function(request) {
+	if(this.cacheable) this.cacheable();
 	var query = loaderUtils.parseQuery(this.query);
 	this.addDependency(this.resourcePath);
 	// We already in child compiler, return empty bundle
@@ -29,15 +29,16 @@ module.exports.pitch = function(request, preReq, data) {
 			this.loaderIndex += +query.omit + 1;
 			request = request.split("!").slice(+query.omit).join("!");
 		}
+		var resultSource;
 		if(query.remove) {
-			var resultSource = "// removed by extract-text-webpack-plugin";
+			resultSource = "// removed by extract-text-webpack-plugin";
 		} else {
-			var resultSource = undefined;
+			resultSource = undefined;
 		}
 
 		if(query.extract !== false) {
-			var childFilename = __dirname + " " + request;
-			var publicPath = typeof query.publicPath === "string" ? query.publicPath : this._compilation.outputOptions.publicPath
+			var childFilename = __dirname + " " + request; // eslint-disable-line no-path-concat
+			var publicPath = typeof query.publicPath === "string" ? query.publicPath : this._compilation.outputOptions.publicPath;
 			var outputOptions = {
 				filename: childFilename,
 				publicPath: publicPath
@@ -48,7 +49,7 @@ module.exports.pitch = function(request, preReq, data) {
 			childCompiler.apply(new NodeTargetPlugin());
 			childCompiler.apply(new SingleEntryPlugin(this.context, "!!" + request));
 			childCompiler.apply(new LimitChunkCountPlugin({ maxChunks: 1 }));
-			var subCache = "subcache " + __dirname + " " + request;
+			var subCache = "subcache " + __dirname + " " + request; // eslint-disable-line no-path-concat
 			childCompiler.plugin("compilation", function(compilation) {
 				if(compilation.cache) {
 					if(!compilation.cache[subCache])
@@ -59,7 +60,7 @@ module.exports.pitch = function(request, preReq, data) {
 			// We set loaderContext[__dirname] = false to indicate we already in
 			// a child compiler so we don't spawn another child compilers from there.
 			childCompiler.plugin("this-compilation", function(compilation) {
-				compilation.plugin("normal-module-loader", function(loaderContext, module) {
+				compilation.plugin("normal-module-loader", function(loaderContext) {
 					loaderContext[__dirname] = false;
 				});
 			});
@@ -75,7 +76,7 @@ module.exports.pitch = function(request, preReq, data) {
 				});
 
 				callback();
-			}.bind(this))
+			});
 			var callback = this.async();
 			childCompiler.runAsChild(function(err, entries, compilation) {
 				if(err) return callback(err);
@@ -101,8 +102,8 @@ module.exports.pitch = function(request, preReq, data) {
 						});
 					});
 					this[__dirname](text, query);
-					if(text.placeholders && typeof resultSource !== "undefined") {
-						resultSource += "\nmodule.exports = " + JSON.stringify(text.placeholders) + ";";
+					if(text.locals && typeof resultSource !== "undefined") {
+						resultSource += "\nmodule.exports = " + JSON.stringify(text.locals) + ";";
 					}
 				} catch(e) {
 					return callback(e);

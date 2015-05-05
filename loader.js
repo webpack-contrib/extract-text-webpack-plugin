@@ -37,7 +37,7 @@ module.exports.pitch = function(request) {
 		}
 
 		if(query.extract !== false) {
-			var childFilename = __dirname + " " + request; // eslint-disable-line no-path-concat
+			var childFilename = "extract-text-webpack-plugin-output-filename"; // eslint-disable-line no-path-concat
 			var publicPath = typeof query.publicPath === "string" ? query.publicPath : this._compilation.outputOptions.publicPath;
 			var outputOptions = {
 				filename: childFilename,

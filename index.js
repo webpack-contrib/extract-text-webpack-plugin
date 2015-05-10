@@ -71,15 +71,21 @@ ExtractTextPlugin.prototype.renderExtractedChunk = function(chunk) {
 	return source;
 };
 
-function getOrder(a, b) {
+function isInvalidOrder(a, b) {
 	var bBeforeA = a.getPrevModules().indexOf(b) >= 0;
 	var aBeforeB = b.getPrevModules().indexOf(a) >= 0;
-	if(aBeforeB && bBeforeA)
-		return NaN;
-	if(bBeforeA)
-		return 1;
-	if(aBeforeB)
-		return -1;
+	return aBeforeB && bBeforeA;
+}
+
+function getOrder(a, b) {
+	var aIndex = a.getOriginalModule().index2;
+	var bIndex = b.getOriginalModule().index2;
+	if(aIndex < bIndex) return -1;
+	if(aIndex > bIndex) return 1;
+	var ai = a.identifier();
+	var bi = b.identifier();
+	if(ai < bi) return -1;
+	if(ai > bi) return 1;
 	return 0;
 }
 
@@ -196,6 +202,8 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 				extractedChunk.index = i;
 				extractedChunk.originalChunk = chunk;
 				extractedChunk.name = chunk.name;
+				extractedChunk.entry = chunk.entry;
+				extractedChunk.initial = chunk.initial;
 				chunk.chunks.forEach(function(c) {
 					extractedChunk.addChunk(extractedChunks[chunks.indexOf(c)]);
 				});
@@ -263,20 +271,11 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 			extractedChunks.forEach(function(extractedChunk) {
 				if(extractedChunk.modules.length) {
 					extractedChunk.modules.sort(function(a, b) {
-						var order = getOrder(a, b);
-						if(isNaN(order)) {
+						if(isInvalidOrder(a, b)) {
 							compilation.errors.push(new OrderUndefinedError(a.getOriginalModule()));
 							compilation.errors.push(new OrderUndefinedError(b.getOriginalModule()));
 						}
-						if(order !== 0 && !isNaN(order))
-							return order;
-						var ai = a.identifier();
-						var bi = b.identifier();
-						if(ai < bi)
-							return -1;
-						if(ai > bi)
-							return 1;
-						return 0;
+						return getOrder(a, b);
 					});
 					var chunk = extractedChunk.originalChunk;
 					var source = this.renderExtractedChunk(extractedChunk);

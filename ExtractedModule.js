@@ -47,11 +47,15 @@ ExtractedModule.prototype.getOriginalModule = function() {
 
 ExtractedModule.prototype.getPrevModules = function() {
 	return this._prevModules;
-}
+};
 
 ExtractedModule.prototype.addPrevModules = function(prevModules) {
 	prevModules.forEach(function(m) {
 		if(this._prevModules.indexOf(m) < 0)
 			this._prevModules.push(m);
 	}, this);
+};
+
+ExtractedModule.prototype.setOriginalModule = function(originalModule) {
+	this._originalModule = originalModule;
 };

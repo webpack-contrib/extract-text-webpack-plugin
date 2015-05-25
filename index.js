@@ -43,6 +43,9 @@ ExtractTextPluginCompilation.prototype.addModule = function(identifier, original
 	} else {
 		m = this.modulesByIdentifier[identifier];
 		m.addPrevModules(prevModules);
+		if(originalModule.index2 < m.getOriginalModule().index2) {
+			m.setOriginalModule(originalModule);
+		}
 	}
 	return m;
 };
@@ -66,7 +69,8 @@ ExtractTextPluginCompilation.prototype.addResultToChunk = function(identifier, r
 ExtractTextPlugin.prototype.renderExtractedChunk = function(chunk) {
 	var source = new ConcatSource();
 	chunk.modules.forEach(function(module) {
-		source.add(this.applyAdditionalInformation(module.source(), module.additionalInformation));
+		var moduleSource = module.source();
+		source.add(this.applyAdditionalInformation(moduleSource, module.additionalInformation));
 	}, this);
 	return source;
 };
@@ -82,6 +86,10 @@ function getOrder(a, b) {
 	var bIndex = b.getOriginalModule().index2;
 	if(aIndex < bIndex) return -1;
 	if(aIndex > bIndex) return 1;
+	var bBeforeA = a.getPrevModules().indexOf(b) >= 0;
+	var aBeforeB = b.getPrevModules().indexOf(a) >= 0;
+	if(aBeforeB && !bBeforeA) return -1;
+	if(!aBeforeB && bBeforeA) return 1;
 	var ai = a.identifier();
 	var bi = b.identifier();
 	if(ai < bi) return -1;

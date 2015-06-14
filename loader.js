@@ -81,6 +81,9 @@ module.exports.pitch = function(request) {
 			childCompiler.runAsChild(function(err, entries, compilation) {
 				if(err) return callback(err);
 
+				if(compilation.errors.length > 0) {
+					return callback(compilation.errors[0]);
+				}
 				compilation.fileDependencies.forEach(function(dep) {
 					this.addDependency(dep);
 				}, this);

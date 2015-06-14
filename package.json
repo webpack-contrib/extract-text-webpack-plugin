@@ -7,8 +7,7 @@
     "webpack": "^1.9.4"
   },
   "dependencies": {
-    "async": "~0.2.10",
-    "source-map": "~0.1.38",
+    "async": "^1.2.1",
     "loader-utils": "~0.2.3"
   },
   "devDependencies": {

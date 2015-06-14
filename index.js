@@ -82,6 +82,10 @@ function isInvalidOrder(a, b) {
 }
 
 function getOrder(a, b) {
+	var aOrder = a.getOrder();
+	var bOrder = b.getOrder();
+	if(aOrder < bOrder) return -1;
+	if(aOrder > bOrder) return 1;
 	var aIndex = a.getOriginalModule().index2;
 	var bIndex = b.getOriginalModule().index2;
 	if(aIndex < bIndex) return -1;

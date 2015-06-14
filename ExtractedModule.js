@@ -16,6 +16,11 @@ function ExtractedModule(identifier, originalModule, source, sourceMap, addtitio
 }
 module.exports = ExtractedModule;
 
+ExtractedModule.prototype.getOrder = function() {
+	// http://stackoverflow.com/a/14676665/1458162
+	return /^@import url/.test(this._source) ? 0 : 1;
+};
+
 ExtractedModule.prototype.addChunk = function(chunk) {
 	var idx = this.chunks.indexOf(chunk);
 	if(idx < 0)

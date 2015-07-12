@@ -23,7 +23,7 @@ module.exports = {
 			{ test: /\.png$/, loader: "file-loader" }
 		]
 	},
-	devtool: "sourcemap",
+	devtool: "source-map",
 	plugins: [
 		new ExtractTextPlugin("css/[name].css?[hash]-[chunkhash]-[contenthash]-[name]", {
 			disable: false,

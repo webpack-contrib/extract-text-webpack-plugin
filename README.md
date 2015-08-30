@@ -30,7 +30,7 @@ Caveats:
 
 * Additional HTTP request
 * Longer compilation time
-* Complexer configuration
+* More complex configuration
 * No runtime public path modification
 * No Hot Module Replacement
 

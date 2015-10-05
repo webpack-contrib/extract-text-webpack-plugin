@@ -127,19 +127,19 @@ ExtractTextPlugin.loader = function(options) {
 };
 
 ExtractTextPlugin.extract = function(before, loader, options) {
-	if(typeof loader === "string") {
+	if(typeof loader === "string" || Array.isArray(loader)) {
+		if(typeof before === "string") {
+			before = before.split("!")
+		}
 		return [
-			ExtractTextPlugin.loader(mergeOptions({omit: before.split("!").length, extract: true, remove: true}, options)),
-			before,
-			loader
-		].join("!");
+			ExtractTextPlugin.loader(mergeOptions({omit: before.length, extract: true, remove: true}, options))
+		].concat(before, loader).join("!");
 	} else {
 		options = loader;
 		loader = before;
 		return [
 			ExtractTextPlugin.loader(mergeOptions({remove: true}, options)),
-			loader
-		].join("!");
+		].concat(loader).join("!");
 	}
 };
 

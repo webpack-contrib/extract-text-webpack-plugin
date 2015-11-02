@@ -129,7 +129,7 @@ ExtractTextPlugin.loader = function(options) {
 ExtractTextPlugin.extract = function(before, loader, options) {
 	if(typeof loader === "string" || Array.isArray(loader)) {
 		if(typeof before === "string") {
-			before = before.split("!")
+			before = before.split("!");
 		}
 		return [
 			ExtractTextPlugin.loader(mergeOptions({omit: before.length, extract: true, remove: true}, options))
@@ -138,7 +138,7 @@ ExtractTextPlugin.extract = function(before, loader, options) {
 		options = loader;
 		loader = before;
 		return [
-			ExtractTextPlugin.loader(mergeOptions({remove: true}, options)),
+			ExtractTextPlugin.loader(mergeOptions({remove: true}, options))
 		].concat(loader).join("!");
 	}
 };
@@ -163,16 +163,16 @@ ExtractTextPlugin.prototype.loader = function(options) {
 ExtractTextPlugin.prototype.extract = function(before, loader, options) {
 	if(typeof loader === "string" || Array.isArray(loader)) {
 		if(typeof before === "string") {
-			before = before.split("!")
+			before = before.split("!");
 		}
 		return [
-			ExtractTextPlugin.loader(mergeOptions({omit: before.length, extract: true, remove: true}, options))
+			this.loader(mergeOptions({omit: before.length, extract: true, remove: true}, options))
 		].concat(before, loader).join("!");
 	} else {
 		options = loader;
 		loader = before;
 		return [
-			ExtractTextPlugin.loader(mergeOptions({remove: true}, options)),
+			this.loader(mergeOptions({remove: true}, options))
 		].concat(loader).join("!");
 	}
 };

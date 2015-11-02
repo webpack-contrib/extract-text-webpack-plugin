@@ -25,7 +25,6 @@ ExtractTextPlugin.prototype.mergeNonInitialChunks = function(chunk, intoChunk, c
 	} else if(checkedChunks.indexOf(chunk) < 0) {
 		checkedChunks.push(chunk);
 		chunk.modules.slice().forEach(function(module) {
-			chunk.removeModule(module);
 			intoChunk.addModule(module);
 			module.addChunk(intoChunk);
 		});
@@ -275,6 +274,13 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 					if(extractedChunk.initial)
 						this.mergeNonInitialChunks(extractedChunk);
 				}, this);
+				extractedChunks.forEach(function(extractedChunk) {
+					if(!extractedChunk.initial) {
+						extractedChunk.modules.forEach(function(module) {
+							extractedChunk.removeModule(module);
+						});
+					}
+				});
 				compilation.applyPlugins("optimize-extracted-chunks", extractedChunks);
 				callback();
 			}.bind(this));

@@ -21,7 +21,7 @@ It moves every `require("style.css")` in entry chunks into a separate css output
 Advantages:
 
 * Fewer style tags (older IE has a limit)
-* CSS SourceMap (with `devtool: "sourcemap"` and `css-loader?sourceMap`)
+* CSS SourceMap (with `devtool: "source-map"` and `css-loader?sourceMap`)
 * CSS requested in parallel
 * CSS cached separate
 * Faster runtime (less code and DOM operations)

@@ -55,14 +55,14 @@ The `ExtractTextPlugin` generates an output file per entry, so you must use `[na
 ExtractTextPlugin.extract([notExtractLoader], loader, [options])
 ```
 
-Creates an extracting loader from a existing loader.
+Creates an extracting loader from an existing loader.
 
-* `notExtractLoader` (optional) the loader(s) that should be used when the css is not extracted (i. e. in a additional chunk when `allChunks: false`)
+* `notExtractLoader` (optional) the loader(s) that should be used when the css is not extracted (i.e. in an additional chunk when `allChunks: false`)
 * `loader` the loader(s) that should be used for converting the resource to a css exporting module.
 * `options`
   * `publicPath` override the `publicPath` setting for this loader.
 
-There is also a `extract` function on the instance. You should use this if you have more than one ExtractTextPlugin.
+There is also an `extract` function on the instance. You should use this if you have more than one ExtractTextPlugin.
 
 ## License
 

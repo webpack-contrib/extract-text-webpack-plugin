@@ -2,8 +2,8 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
-var SourceMapSource = require("webpack/lib/SourceMapSource");
-var RawSource = require("webpack/lib/RawSource");
+var SourceMapSource = require("webpack-sources").SourceMapSource;
+var RawSource = require("webpack-sources").RawSource;
 
 function ExtractedModule(identifier, originalModule, source, sourceMap, addtitionalInformation, prevModules) {
 	this._identifier = identifier;

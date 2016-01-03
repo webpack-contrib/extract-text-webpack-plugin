@@ -2,7 +2,7 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
-var ConcatSource = require("webpack/lib/ConcatSource");
+var ConcatSource = require("webpack-sources").ConcatSource;
 var async = require("async");
 var ExtractedModule = require("./ExtractedModule");
 var Chunk = require("webpack/lib/Chunk");

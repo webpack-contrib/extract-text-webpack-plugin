@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "async": "^1.5.0",
-    "loader-utils": "^0.2.3"
+    "loader-utils": "^0.2.3",
+    "webpack-sources": "^0.1.0"
   },
   "devDependencies": {
     "codecov.io": "^0.1.2",

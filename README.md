@@ -64,6 +64,29 @@ Creates an extracting loader from an existing loader.
 
 There is also an `extract` function on the instance. You should use this if you have more than one ExtractTextPlugin.
 
+```javascript
+let ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+// multiple extract instances
+let extractCSS = new ExtractTextPlugin('stylesheets/[name].css');
+let extractLESS = new ExtractTextPlugin('stylesheets/[name].less');
+
+module.exports = {
+  ...
+  module: {
+    loaders: [
+      {test: /\.scss$/i, loader: extractCSS.extract(['css','sass'])},
+      {test: /\.less$/i, loader: extractLESS.extract(['css','less'])},
+      ...
+    ]
+  },
+  plugins: [
+    extractCSS,
+    extractLESS
+  ]
+};
+```
+
 ## License
 
 MIT (http://www.opensource.org/licenses/mit-license.php)

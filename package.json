@@ -33,7 +33,7 @@
   "scripts": {
     "test": "mocha",
     "travis": "npm run cover -- --report lcovonly",
-    "cover": "istanbul cover node_modules/mocha/bin/_mocha",
+    "cover": "istanbul cover _mocha",
     "publish-patch": "mocha && npm version patch && git push && git push --tags && npm publish"
   }
 }

@@ -100,16 +100,28 @@ function getOrder(a, b) {
 	return 0;
 }
 
-function ExtractTextPlugin(id, filename, options) {
-	if(!isString(filename)) {
-		options = filename;
-		filename = id;
-		id = ++nextId;
+function ExtractTextPlugin(options) {
+	if(arguments.length > 1) {
+		throw new Error("Deprecation notice: ExtractTextPlugin now only takes a single argument. Either an options " +
+						"object *or* the name of the result file.\n" +
+						"Example: if your old code looked like this:\n" +
+						"    new ExtractTextPlugin('css/[name].css', { disable: false, allChunks: true })\n\n" +
+						"You would change it to:\n" +
+						"    new ExtractTextPlugin({ filename: 'css/[name].css', disable: false, allChunks: true })\n\n" +
+						"The available options are:\n" +
+						"    filename: string\n" +
+						"    allChunks: boolean\n" +
+						"    disable: boolean\n");
 	}
-	if(!options) options = {};
-	this.filename = filename;
-	this.options = options;
-	this.id = id;
+	if(isString(options)) {
+		options = { filename: options };
+	}
+	this.filename = options.filename;
+	this.id = options.id != null ? options.id : ++nextId;
+	this.options = {};
+	mergeOptions(this.options, options);
+	delete this.options.filename;
+	delete this.options.id;
 }
 module.exports = ExtractTextPlugin;
 
@@ -192,7 +204,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 			loaderContext[__dirname] = function(content, opt) {
 				if(options.disable)
 					return false;
-				if(!Array.isArray(content) && content !== null)
+				if(!Array.isArray(content) && content != null)
 					throw new Error("Exported value is not a string.");
 				module.meta[__dirname] = {
 					content: content,

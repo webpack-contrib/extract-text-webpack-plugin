@@ -205,7 +205,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 				if(options.disable)
 					return false;
 				if(!Array.isArray(content) && content != null)
-					throw new Error("Exported value is not a string.");
+					throw new Error("Exported value was not extracted as an array: " + JSON.stringify(content));
 				module.meta[__dirname] = {
 					content: content,
 					options: opt || {}

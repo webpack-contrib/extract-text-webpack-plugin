@@ -184,7 +184,7 @@ ExtractTextPlugin.prototype.extract = function(options) {
 	} else if(!Array.isArray(before)) {
 		before = [before];
 	}
-	options = mergeOptions({omit: before.length, extract: !!before.length, remove: true}, options);
+	options = mergeOptions({omit: before.length, remove: true}, options);
 	delete options.loader;
 	delete options.notExtractLoader;
 	var loaders = [this.loader(options)].concat(before, loader);

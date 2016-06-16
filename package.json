@@ -4,7 +4,7 @@
   "author": "Tobias Koppers @sokra",
   "description": "Extract text from bundle into a file.",
   "peerDependencies": {
-    "webpack": "^1.9.11"
+    "webpack": "^1.9.11 || ^2.1.0-beta"
   },
   "dependencies": {
     "async": "^1.5.0",
@@ -22,7 +22,7 @@
     "raw-loader": "^0.5.1",
     "should": "^7.1.1",
     "style-loader": "^0.13.0",
-    "webpack": "^1.12.2"
+    "webpack": "^2.1.0-beta"
   },
   "homepage": "http://github.com/webpack/extract-text-webpack-plugin",
   "repository": {

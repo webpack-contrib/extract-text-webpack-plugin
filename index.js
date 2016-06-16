@@ -158,7 +158,7 @@ ExtractTextPlugin.prototype.loader = function(options) {
 	return ExtractTextPlugin.loader(options);
 };
 
-ExtractTextPlugin.prototype.extract = function(options) {
+ExtractTextPlugin.prototype.extractAll = function(options) {
 	if(arguments.length > 1) {
 		throw new Error("Deprecation notice: extract now only takes a single argument. Either an options " +
 						"object *or* the loader(s).\n" +
@@ -187,12 +187,14 @@ ExtractTextPlugin.prototype.extract = function(options) {
 	options = mergeOptions({omit: before.length, remove: true}, options);
 	delete options.loader;
 	delete options.notExtractLoader;
-	var loaders = [this.loader(options)].concat(before, loader);
-	if(loaders.every(isString)) {
-		loaders = loaders.join("!");
-	}
-	return loaders;
+	return [this.loader(options)].concat(before, loader);
 };
+
+ExtractTextPlugin.extractAll = ExtractTextPlugin.prototype.extractAll.bind(ExtractTextPlugin);
+
+ExtractTextPlugin.prototype.extract = function(options) {
+	return this.extractAll(options).join("!");
+}
 
 ExtractTextPlugin.extract = ExtractTextPlugin.prototype.extract.bind(ExtractTextPlugin);
 

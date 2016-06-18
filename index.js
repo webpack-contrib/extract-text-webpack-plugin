@@ -102,7 +102,7 @@ function getOrder(a, b) {
 
 function ExtractTextPlugin(options) {
 	if(arguments.length > 1) {
-		throw new Error("Deprecation notice: ExtractTextPlugin now only takes a single argument. Either an options " +
+		throw new Error("Breaking change: ExtractTextPlugin now only takes a single argument. Either an options " +
 						"object *or* the name of the result file.\n" +
 						"Example: if your old code looked like this:\n" +
 						"    new ExtractTextPlugin('css/[name].css', { disable: false, allChunks: true })\n\n" +
@@ -165,7 +165,7 @@ ExtractTextPlugin.prototype.loader = function(options) {
 
 ExtractTextPlugin.prototype.extract = function(options) {
 	if(arguments.length > 1) {
-		throw new Error("Deprecation notice: extract now only takes a single argument. Either an options " +
+		throw new Error("Breaking change: extract now only takes a single argument. Either an options " +
 						"object *or* the loader(s).\n" +
 						"Example: if your old code looked like this:\n" +
 						"    ExtractTextPlugin.extract('style-loader', 'css-loader')\n\n" +

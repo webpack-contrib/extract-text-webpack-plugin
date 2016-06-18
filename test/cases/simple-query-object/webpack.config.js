@@ -11,6 +11,7 @@ module.exports = {
 			}) }
 		]
 	},
+	devtool: "source-map",
 	plugins: [
 		new ExtractTextPlugin("file.css")
 	]

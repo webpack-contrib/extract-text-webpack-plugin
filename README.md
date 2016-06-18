@@ -7,7 +7,7 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 module.exports = {
 	module: {
 		loaders: [
-			{ test: /\.css$/, loaders: ExtractTextPlugin.extractAll({
+			{ test: /\.css$/, loader: ExtractTextPlugin.extract({
 				notExtractLoader: "style-loader",
 				loader: "css-loader"
 			}) }
@@ -54,22 +54,16 @@ new ExtractTextPlugin(options: filename | object)
 The `ExtractTextPlugin` generates an output file per entry, so you must use `[name]`, `[id]` or `[contenthash]` when using multiple entries.
 
 ``` javascript
-ExtractTextPlugin.extractAll(options: loader | object)
+ExtractTextPlugin.extract(options: loader | object)
 ```
 
-Creates an extracting `loaders` array from an existing loader. Supports WebPack 2.
+Creates an extracting loader from an existing loader. Supports loaders of type `{ loader: string; query: object }`.
 
 * `options.loader: string | object | loader[]` _(required)_ the loader(s) that should be used for converting the resource to a css exporting module
 * `options.notExtractLoader: string | object | loader[]` the loader(s) that should be used when the css is not extracted (i.e. in an additional chunk when `allChunks: false`)
 * `options.publicPath: string` override the `publicPath` setting for this loader
 
-``` javascript
-ExtractTextPlugin.extract(options: loader | object)
-```
-
-Creates an extracting `loader` string for backwards compatibility with previous versions.
-
-There is also an `extractAll`/`extract` function on the instance. You should use this if you have more than one `ExtractTextPlugin`.
+There is also an `extract` function on the instance. You should use this if you have more than one `ExtractTextPlugin`.
 
 ```javascript
 let ExtractTextPlugin = require('extract-text-webpack-plugin');
@@ -82,8 +76,8 @@ module.exports = {
   ...
   module: {
     loaders: [
-      { test: /\.scss$/i, loaders: extractCSS.extractAll(['css','sass']) },
-      { test: /\.less$/i, loaders: extractLESS.extractAll(['css','less']) },
+      { test: /\.scss$/i, loader: extractCSS.extract(['css','sass']) },
+      { test: /\.less$/i, loader: extractLESS.extract(['css','less']) },
       ...
     ]
   },

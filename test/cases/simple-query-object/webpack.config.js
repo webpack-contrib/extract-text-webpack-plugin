@@ -3,7 +3,7 @@ module.exports = {
 	entry: "./index",
 	module: {
 		loaders: [
-			{ test: /\.css$/, loaders: ExtractTextPlugin.extractAll({
+			{ test: /\.css$/, loader: ExtractTextPlugin.extract({
 				notExtractLoader: "style-loader",
 				loader: { loader: "css-loader", query: {
 					sourceMap: true

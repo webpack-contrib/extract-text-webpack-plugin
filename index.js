@@ -125,6 +125,13 @@ function ExtractTextPlugin(options) {
 }
 module.exports = ExtractTextPlugin;
 
+// modified from webpack/lib/LoadersList.js
+function getLoaderWithQuery(loader) {
+	if(isString(loader) || !loader.query) return loader;
+	var query = isString(loader.query) ? loader.query : JSON.stringify(loader.query);
+	return loader.loader + "?" + query;
+}
+
 function mergeOptions(a, b) {
 	if(!b) return a;
 	Object.keys(b).forEach(function(key) {
@@ -156,7 +163,7 @@ ExtractTextPlugin.prototype.loader = function(options) {
 	return ExtractTextPlugin.loader(mergeOptions({id: this.id}, options));
 };
 
-ExtractTextPlugin.prototype.extractAll = function(options) {
+ExtractTextPlugin.prototype.extract = function(options) {
 	if(arguments.length > 1) {
 		throw new Error("Deprecation notice: extract now only takes a single argument. Either an options " +
 						"object *or* the loader(s).\n" +
@@ -185,16 +192,10 @@ ExtractTextPlugin.prototype.extractAll = function(options) {
 	options = mergeOptions({omit: before.length, remove: true}, options);
 	delete options.loader;
 	delete options.notExtractLoader;
-	return [this.loader(options)].concat(before, loader);
-};
-
-ExtractTextPlugin.extractAll = ExtractTextPlugin.prototype.extractAll.bind(ExtractTextPlugin);
-
-ExtractTextPlugin.prototype.extract = function(options) {
-	return this.extractAll(options).map(function(loader) {
-		if(isString(loader)) return loader;
-		return loader.loader + "?" + (loader.query ? JSON.stringify(loader.query) : "");
-	}).join("!");
+	return [this.loader(options)]
+		.concat(before, loader)
+		.map(getLoaderWithQuery)
+		.join("!");
 }
 
 ExtractTextPlugin.extract = ExtractTextPlugin.prototype.extract.bind(ExtractTextPlugin);

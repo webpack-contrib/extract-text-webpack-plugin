@@ -97,6 +97,9 @@ module.exports = {
 };
 ```
 
+## Maybe a temp repo
+This maybe a temporary repository. Once ```extract-text-webpack-plugin``` merge my pull request, please stick to the origin repo.
+
 ## License
 
 MIT (http://www.opensource.org/licenses/mit-license.php)

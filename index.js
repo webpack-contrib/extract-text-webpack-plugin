@@ -100,18 +100,37 @@ function getOrder(a, b) {
 	return 0;
 }
 
-function ExtractTextPlugin(id, filename, options) {
-	if(typeof filename !== "string") {
-		options = filename;
-		filename = id;
-		id = ++nextId;
+function ExtractTextPlugin(options) {
+	if(arguments.length > 1) {
+		throw new Error("Breaking change: ExtractTextPlugin now only takes a single argument. Either an options " +
+						"object *or* the name of the result file.\n" +
+						"Example: if your old code looked like this:\n" +
+						"    new ExtractTextPlugin('css/[name].css', { disable: false, allChunks: true })\n\n" +
+						"You would change it to:\n" +
+						"    new ExtractTextPlugin({ filename: 'css/[name].css', disable: false, allChunks: true })\n\n" +
+						"The available options are:\n" +
+						"    filename: string\n" +
+						"    allChunks: boolean\n" +
+						"    disable: boolean\n");
 	}
-	if(!options) options = {};
-	this.filename = filename;
-	this.options = options;
-	this.id = id;
+	if(isString(options)) {
+		options = { filename: options };
+	}
+	this.filename = options.filename;
+	this.id = options.id != null ? options.id : ++nextId;
+	this.options = {};
+	mergeOptions(this.options, options);
+	delete this.options.filename;
+	delete this.options.id;
 }
 module.exports = ExtractTextPlugin;
+
+// modified from webpack/lib/LoadersList.js
+function getLoaderWithQuery(loader) {
+	if(isString(loader) || !loader.query) return loader;
+	var query = isString(loader.query) ? loader.query : JSON.stringify(loader.query);
+	return loader.loader + "?" + query;
+}
 
 function mergeOptions(a, b) {
 	if(!b) return a;
@@ -121,25 +140,12 @@ function mergeOptions(a, b) {
 	return a;
 }
 
-ExtractTextPlugin.loader = function(options) {
-	return require.resolve("./loader") + (options ? "?" + JSON.stringify(options) : "");
-};
+function isString(a) {
+	return typeof a === "string";
+}
 
-ExtractTextPlugin.extract = function(before, loader, options) {
-	if(typeof loader === "string" || Array.isArray(loader)) {
-		if(typeof before === "string") {
-			before = before.split("!");
-		}
-		return [
-			ExtractTextPlugin.loader(mergeOptions({omit: before.length, extract: true, remove: true}, options))
-		].concat(before, loader).join("!");
-	} else {
-		options = loader;
-		loader = before;
-		return [
-			ExtractTextPlugin.loader(mergeOptions({remove: true}, options))
-		].concat(loader).join("!");
-	}
+ExtractTextPlugin.loader = function(options) {
+	return { loader: require.resolve("./loader"), query: options };
 };
 
 ExtractTextPlugin.prototype.applyAdditionalInformation = function(source, info) {
@@ -154,27 +160,45 @@ ExtractTextPlugin.prototype.applyAdditionalInformation = function(source, info) 
 };
 
 ExtractTextPlugin.prototype.loader = function(options) {
-	options = JSON.parse(JSON.stringify(options || {}));
-	options.id = this.id;
-	return ExtractTextPlugin.loader(options);
+	return ExtractTextPlugin.loader(mergeOptions({id: this.id}, options));
 };
 
-ExtractTextPlugin.prototype.extract = function(before, loader, options) {
-	if(typeof loader === "string" || Array.isArray(loader)) {
-		if(typeof before === "string") {
-			before = before.split("!");
-		}
-		return [
-			this.loader(mergeOptions({omit: before.length, extract: true, remove: true}, options))
-		].concat(before, loader).join("!");
-	} else {
-		options = loader;
-		loader = before;
-		return [
-			this.loader(mergeOptions({remove: true}, options))
-		].concat(loader).join("!");
+ExtractTextPlugin.prototype.extract = function(options) {
+	if(arguments.length > 1) {
+		throw new Error("Breaking change: extract now only takes a single argument. Either an options " +
+						"object *or* the loader(s).\n" +
+						"Example: if your old code looked like this:\n" +
+						"    ExtractTextPlugin.extract('style-loader', 'css-loader')\n\n" +
+						"You would change it to:\n" +
+						"    ExtractTextPlugin.extract({ notExtractLoader: 'style-loader', loader: 'css-loader' })\n\n" +
+						"The available options are:\n" +
+						"    loader: string | object | loader[]\n" +
+						"    notExtractLoader: string | object | loader[]\n" +
+						"    publicPath: string\n");
 	}
-};
+	if(Array.isArray(options) || isString(options) || typeof options.query === "object") {
+		options = { loader: options };
+	}
+	var loader = options.loader;
+	var before = options.notExtractLoader || [];
+	if(isString(loader)) {
+		loader = loader.split("!");
+	}
+	if(isString(before)) {
+		before = before.split("!");
+	} else if(!Array.isArray(before)) {
+		before = [before];
+	}
+	options = mergeOptions({omit: before.length, remove: true}, options);
+	delete options.loader;
+	delete options.notExtractLoader;
+	return [this.loader(options)]
+		.concat(before, loader)
+		.map(getLoaderWithQuery)
+		.join("!");
+}
+
+ExtractTextPlugin.extract = ExtractTextPlugin.prototype.extract.bind(ExtractTextPlugin);
 
 ExtractTextPlugin.prototype.apply = function(compiler) {
 	var options = this.options;
@@ -184,8 +208,8 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 			loaderContext[__dirname] = function(content, opt) {
 				if(options.disable)
 					return false;
-				if(!Array.isArray(content) && content !== null)
-					throw new Error("Exported value is not a string.");
+				if(!Array.isArray(content) && content != null)
+					throw new Error("Exported value was not extracted as an array: " + JSON.stringify(content));
 				module.meta[__dirname] = {
 					content: content,
 					options: opt || {}

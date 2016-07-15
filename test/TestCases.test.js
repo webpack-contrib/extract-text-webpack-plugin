@@ -5,13 +5,13 @@ var webpack = require("webpack");
 var should = require("should");
 var ExtractTextPlugin = require("../");
 
-var cases = process.env.CASES ? process.env.CASES.split(",") : fs.readdirSync(path.join(__dirname, "cases"));
+var cases = process.env.CASES ? process.env.CASES.split(",") : fs.readdirSync(path.join(fs.realpathSync(__dirname), "cases"));
 
 describe("TestCases", function() {
 	cases.forEach(function(testCase) {
 		it(testCase, function(done) {
-			var testDirectory = path.join(__dirname, "cases", testCase);
-			var outputDirectory = path.join(__dirname, "js", testCase);
+			var testDirectory = path.join(fs.realpathSync(__dirname), "cases", testCase);
+			var outputDirectory = path.join(fs.realpathSync(__dirname), "js", testCase);
 			var options = { entry: { test: "./index.js" } };
 			var configFile = path.join(testDirectory, "webpack.config.js");
 			if(fs.existsSync(configFile))

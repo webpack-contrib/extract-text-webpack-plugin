@@ -1,3 +1,4 @@
+var fs = require('fs');
 var webpack = require("webpack");
 var ExtractTextPlugin = require("../");
 module.exports = {
@@ -8,7 +9,7 @@ module.exports = {
 	output: {
 		filename: "[name].js?[hash]-[chunkhash]",
 		chunkFilename: "[name].js?[hash]-[chunkhash]",
-		path: __dirname + "/assets",
+		path: fs.realpathSync(__dirname) + "/assets",
 		publicPath: "/assets/"
 	},
 	module: {

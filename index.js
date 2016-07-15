@@ -2,6 +2,7 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
+var fs = require('fs');
 var ConcatSource = require("webpack-sources").ConcatSource;
 var async = require("async");
 var ExtractedModule = require("./ExtractedModule");
@@ -205,16 +206,16 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 	compiler.plugin("this-compilation", function(compilation) {
 		var extractCompilation = new ExtractTextPluginCompilation();
 		compilation.plugin("normal-module-loader", function(loaderContext, module) {
-			loaderContext[__dirname] = function(content, opt) {
+			loaderContext[fs.realpathSync(__dirname)] = function(content, opt) {
 				if(options.disable)
 					return false;
 				if(!Array.isArray(content) && content != null)
 					throw new Error("Exported value was not extracted as an array: " + JSON.stringify(content));
-				module.meta[__dirname] = {
+				module.meta[fs.realpathSync(__dirname)] = {
 					content: content,
 					options: opt || {}
 				};
-				return options.allChunks || module.meta[__dirname + "/extract"]; // eslint-disable-line no-path-concat
+				return options.allChunks || module.meta[fs.realpathSync(__dirname) + "/extract"]; // eslint-disable-line no-path-concat
 			};
 		});
 		var filename = this.filename;
@@ -241,17 +242,17 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 				var extractedChunk = extractedChunks[chunks.indexOf(chunk)];
 				var shouldExtract = !!(options.allChunks || chunk.isInitial());
 				async.forEach(chunk.modules.slice(), function(module, callback) {
-					var meta = module.meta && module.meta[__dirname];
+					var meta = module.meta && module.meta[fs.realpathSync(__dirname)];
 					if(meta && (!meta.options.id || meta.options.id === id)) {
 						var wasExtracted = Array.isArray(meta.content);
 						if(shouldExtract !== wasExtracted) {
-							module.meta[__dirname + "/extract"] = shouldExtract; // eslint-disable-line no-path-concat
+							module.meta[fs.realpathSync(__dirname) + "/extract"] = shouldExtract; // eslint-disable-line no-path-concat
 							compilation.rebuildModule(module, function(err) {
 								if(err) {
 									compilation.errors.push(err);
 									return callback();
 								}
-								meta = module.meta[__dirname];
+								meta = module.meta[fs.realpathSync(__dirname)];
 								if(!Array.isArray(meta.content)) {
 									err = new Error(module.identifier() + " doesn't export content");
 									compilation.errors.push(err);

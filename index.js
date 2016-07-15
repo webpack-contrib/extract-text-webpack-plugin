@@ -10,6 +10,8 @@ var Chunk = require("webpack/lib/Chunk");
 var OrderUndefinedError = require("./OrderUndefinedError");
 var loaderUtils = require("loader-utils");
 
+var NS = fs.realpathSync(__dirname);
+
 var nextId = 0;
 
 function ExtractTextPluginCompilation() {
@@ -206,16 +208,16 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 	compiler.plugin("this-compilation", function(compilation) {
 		var extractCompilation = new ExtractTextPluginCompilation();
 		compilation.plugin("normal-module-loader", function(loaderContext, module) {
-			loaderContext[fs.realpathSync(__dirname)] = function(content, opt) {
+			loaderContext[NS] = function(content, opt) {
 				if(options.disable)
 					return false;
 				if(!Array.isArray(content) && content != null)
 					throw new Error("Exported value was not extracted as an array: " + JSON.stringify(content));
-				module.meta[fs.realpathSync(__dirname)] = {
+				module.meta[NS] = {
 					content: content,
 					options: opt || {}
 				};
-				return options.allChunks || module.meta[fs.realpathSync(__dirname) + "/extract"]; // eslint-disable-line no-path-concat
+				return options.allChunks || module.meta[NS + "/extract"]; // eslint-disable-line no-path-concat
 			};
 		});
 		var filename = this.filename;
@@ -242,17 +244,17 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 				var extractedChunk = extractedChunks[chunks.indexOf(chunk)];
 				var shouldExtract = !!(options.allChunks || chunk.isInitial());
 				async.forEach(chunk.modules.slice(), function(module, callback) {
-					var meta = module.meta && module.meta[fs.realpathSync(__dirname)];
+					var meta = module.meta && module.meta[NS];
 					if(meta && (!meta.options.id || meta.options.id === id)) {
 						var wasExtracted = Array.isArray(meta.content);
 						if(shouldExtract !== wasExtracted) {
-							module.meta[fs.realpathSync(__dirname) + "/extract"] = shouldExtract; // eslint-disable-line no-path-concat
+							module.meta[NS + "/extract"] = shouldExtract; // eslint-disable-line no-path-concat
 							compilation.rebuildModule(module, function(err) {
 								if(err) {
 									compilation.errors.push(err);
 									return callback();
 								}
-								meta = module.meta[fs.realpathSync(__dirname)];
+								meta = module.meta[NS];
 								if(!Array.isArray(meta.content)) {
 									err = new Error(module.identifier() + " doesn't export content");
 									compilation.errors.push(err);

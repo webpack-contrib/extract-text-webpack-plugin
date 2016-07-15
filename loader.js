@@ -2,29 +2,34 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
+var fs = require("fs");
 var loaderUtils = require("loader-utils");
 var NodeTemplatePlugin = require("webpack/lib/node/NodeTemplatePlugin");
 var NodeTargetPlugin = require("webpack/lib/node/NodeTargetPlugin");
 var LibraryTemplatePlugin = require("webpack/lib/LibraryTemplatePlugin");
 var SingleEntryPlugin = require("webpack/lib/SingleEntryPlugin");
 var LimitChunkCountPlugin = require("webpack/lib/optimize/LimitChunkCountPlugin");
+
+var NS = fs.realpathSync(__dirname);
+
 module.exports = function(source) {
 	if(this.cacheable) this.cacheable();
 	return source;
 };
+
 module.exports.pitch = function(request) {
 	if(this.cacheable) this.cacheable();
 	var query = loaderUtils.parseQuery(this.query);
 	this.addDependency(this.resourcePath);
 	// We already in child compiler, return empty bundle
-	if(this[fs.realpathSync(__dirname)] === undefined) {
+	if(this[NS] === undefined) {
 		throw new Error(
 			'"extract-text-webpack-plugin" loader is used without the corresponding plugin, ' +
 			'refer to https://github.com/webpack/extract-text-webpack-plugin for the usage example'
 		);
-	} else if(this[fs.realpathSync(__dirname)] === false) {
+	} else if(this[NS] === false) {
 		return "";
-	} else if(this[fs.realpathSync(__dirname)](null, query)) {
+	} else if(this[NS](null, query)) {
 		if(query.omit) {
 			this.loaderIndex += +query.omit + 1;
 			request = request.split("!").slice(+query.omit).join("!");
@@ -48,7 +53,7 @@ module.exports.pitch = function(request) {
 		childCompiler.apply(new NodeTargetPlugin());
 		childCompiler.apply(new SingleEntryPlugin(this.context, "!!" + request));
 		childCompiler.apply(new LimitChunkCountPlugin({ maxChunks: 1 }));
-		var subCache = "subcache " + fs.realpathSync(__dirname) + " " + request; // eslint-disable-line no-path-concat
+		var subCache = "subcache " + NS + " " + request; // eslint-disable-line no-path-concat
 		childCompiler.plugin("compilation", function(compilation) {
 			if(compilation.cache) {
 				if(!compilation.cache[subCache])
@@ -56,11 +61,11 @@ module.exports.pitch = function(request) {
 				compilation.cache = compilation.cache[subCache];
 			}
 		});
-		// We set loaderContext[fs.realpathSync(__dirname)] = false to indicate we already in
+		// We set loaderContext[NS] = false to indicate we already in
 		// a child compiler so we don't spawn another child compilers from there.
 		childCompiler.plugin("this-compilation", function(compilation) {
 			compilation.plugin("normal-module-loader", function(loaderContext) {
-				loaderContext[fs.realpathSync(__dirname)] = false;
+				loaderContext[NS] = false;
 			});
 		});
 		var source;
@@ -103,7 +108,7 @@ module.exports.pitch = function(request) {
 							item[0] = module.identifier();
 					});
 				});
-				this[fs.realpathSync(__dirname)](text, query);
+				this[NS](text, query);
 				if(text.locals && typeof resultSource !== "undefined") {
 					resultSource += "\nmodule.exports = " + JSON.stringify(text.locals) + ";";
 				}

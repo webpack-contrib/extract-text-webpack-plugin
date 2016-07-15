@@ -282,7 +282,7 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 				}, this);
 				extractedChunks.forEach(function(extractedChunk) {
 					if(!extractedChunk.isInitial()) {
-						extractedChunk.modules.forEach(function(module) {
+						extractedChunk.modules.slice().forEach(function(module) {
 							extractedChunk.removeModule(module);
 						});
 					}

@@ -8,7 +8,7 @@ module.exports = {
 	module: {
 		loaders: [
 			{ test: /\.css$/, loader: ExtractTextPlugin.extract({
-				notExtractLoader: "style-loader",
+				fallbackLoader: "style-loader",
 				loader: "css-loader"
 			}) }
 		]
@@ -60,7 +60,7 @@ ExtractTextPlugin.extract(options: loader | object)
 Creates an extracting loader from an existing loader. Supports loaders of type `{ loader: string; query: object }`.
 
 * `options.loader: string | object | loader[]` _(required)_ the loader(s) that should be used for converting the resource to a css exporting module
-* `options.notExtractLoader: string | object | loader[]` the loader(s) that should be used when the css is not extracted (i.e. in an additional chunk when `allChunks: false`)
+* `options.fallbackLoader: string | object | loader[]` the loader(s) that should be used when the css is not extracted (i.e. in an additional chunk when `allChunks: false`)
 * `options.publicPath: string` override the `publicPath` setting for this loader
 
 There is also an `extract` function on the instance. You should use this if you have more than one `ExtractTextPlugin`.

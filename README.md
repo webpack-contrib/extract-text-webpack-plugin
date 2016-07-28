@@ -1,4 +1,6 @@
-# extract text plugin for webpack
+# extract text plugin for webpack 2
+
+The API has changed since version 1. For the webpack 1 version, see [the README in the webpack-1 branch](https://github.com/webpack/extract-text-webpack-plugin/blob/webpack-1/README.md).
 
 ## Usage example with css
 

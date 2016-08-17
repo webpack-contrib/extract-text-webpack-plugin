@@ -130,7 +130,8 @@ module.exports = ExtractTextPlugin;
 
 // modified from webpack/lib/LoadersList.js
 function getLoaderWithQuery(loader) {
-	if(isString(loader) || !loader.query) return loader;
+	if(isString(loader)) return loader;
+	if(!loader.query) return loader.loader;
 	var query = isString(loader.query) ? loader.query : JSON.stringify(loader.query);
 	return loader.loader + "?" + query;
 }

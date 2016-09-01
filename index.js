@@ -214,11 +214,11 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 					return false;
 				if(!Array.isArray(content) && content != null)
 					throw new Error("Exported value was not extracted as an array: " + JSON.stringify(content));
-				module.meta[NS] = {
+				module[NS] = {
 					content: content,
 					options: opt || {}
 				};
-				return options.allChunks || module.meta[NS + "/extract"]; // eslint-disable-line no-path-concat
+				return options.allChunks || module[NS + "/extract"]; // eslint-disable-line no-path-concat
 			};
 		});
 		var filename = this.filename;
@@ -245,17 +245,17 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 				var extractedChunk = extractedChunks[chunks.indexOf(chunk)];
 				var shouldExtract = !!(options.allChunks || chunk.isInitial());
 				async.forEach(chunk.modules.slice(), function(module, callback) {
-					var meta = module.meta && module.meta[NS];
+					var meta = module[NS];
 					if(meta && (!meta.options.id || meta.options.id === id)) {
 						var wasExtracted = Array.isArray(meta.content);
 						if(shouldExtract !== wasExtracted) {
-							module.meta[NS + "/extract"] = shouldExtract; // eslint-disable-line no-path-concat
+							module[NS + "/extract"] = shouldExtract; // eslint-disable-line no-path-concat
 							compilation.rebuildModule(module, function(err) {
 								if(err) {
 									compilation.errors.push(err);
 									return callback();
 								}
-								meta = module.meta[NS];
+								meta = module[NS];
 								if(!Array.isArray(meta.content)) {
 									err = new Error(module.identifier() + " doesn't export content");
 									compilation.errors.push(err);

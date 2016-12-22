@@ -2,6 +2,18 @@
 
 The API has changed since version 1. For the webpack 1 version, see [the README in the webpack-1 branch](https://github.com/webpack/extract-text-webpack-plugin/blob/webpack-1/README.md).
 
+## Install
+
+> You can either install it with [npm](https://nodejs.org/en/) or [yarn](https://yarnpkg.com/)
+
+```sh
+npm install --save-dev extract-text-webpack-plugin
+```
+or
+```sh
+yarn add --dev extract-text-webpack-plugin
+```
+
 ## Usage example with css
 
 ``` javascript

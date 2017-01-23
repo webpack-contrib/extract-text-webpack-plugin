@@ -1,5 +1,5 @@
 {
-  "name": "extract-text-webpack-plugin",
+  "name": "extract-text-webpack-plugin-steamer",
   "version": "2.0.0-beta.5",
   "author": "Tobias Koppers @sokra",
   "description": "Extract text from bundle into a file.",

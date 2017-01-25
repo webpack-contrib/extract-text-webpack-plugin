@@ -1,8 +1,8 @@
 {
-  "fallbackLoader": { "type": "string" },
-  "loader": { "type": "string" },
-  "publicPath": { "type": "string" },
-  "disable": { "type": "boolean" },
   "allChunks": { "type": "boolean"},
-  "filename": { "type": "string" }
+  "disable": { "type": "boolean" },
+  "fallbackLoader": { "type": "string" },
+  "filename": { "type": "string" },
+  "loader": { "type": "string" },
+  "publicPath": { "type": "string" }
 }

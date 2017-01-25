@@ -2,75 +2,30 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "properties": {
-    "fallbackLoader": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "type"
-      ]
-    },
-    "loader": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "type"
-      ]
-    },
-    "publicPath": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "type"
-      ]
+    "allChunks": {
+      "description": "",
+      "type": "boolean"
     },
     "disable": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "type"
-      ]
+      "description": "",
+      "type": "boolean"
     },
-    "allChunks": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "type"
-      ]
+    "fallbackLoader": {
+      "description": "A loader that webpack can fall back to if the original one fails.",
+      "type": "string"
     },
     "filename": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "type"
-      ]
+      "description": "The filename and path that ExtractTextPlugin will extract to.",
+      "type": "string"
+    },
+    "loader": {
+      "description": "The loader that ExtractTextPlugin will attempt to load through.",
+      "type": "string"
+    },
+    "publicPath": {
+      "description": "",
+      "type": "string"
     }
   },
-  "required": [
-    "loader",
-    "filename"
-  ]
+  "required": ["loader"]
 }

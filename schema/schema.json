@@ -70,11 +70,7 @@
     }
   },
   "required": [
-    "fallbackLoader",
     "loader",
-    "publicPath",
-    "disable",
-    "allChunks",
     "filename"
   ]
 }

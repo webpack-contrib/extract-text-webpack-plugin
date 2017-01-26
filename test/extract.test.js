@@ -10,6 +10,26 @@ describe("ExtractTextPlugin.extract()", function() {
 		});
 	});
 
+	context("json schema validation", function() {
+		it("throws if an incorrect config is passed in", function() {
+			should.throws(function() {
+				ExtractTextPlugin.extract(['style-loader', 'file.css']);
+			});
+		});
+
+		it("does not throw if a correct config object is passed in", function() {
+			should.doesNotThrow(function() {
+				ExtractTextPlugin.extract({loader: 'css-loader'});
+			});
+		});
+
+		it("does not throw if a filename is specified", function() {
+			should.doesNotThrow(function() {
+				ExtractTextPlugin.extract("file.css");
+			});
+		});
+	});
+
 	context("specifying loader", function() {
 		it("accepts a loader string", function() {
 			ExtractTextPlugin.extract("css-loader").should.deepEqual([

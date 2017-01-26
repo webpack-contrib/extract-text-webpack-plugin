@@ -11,9 +11,9 @@ describe("ExtractTextPlugin.extract()", function() {
 	});
 
 	context("json schema validation", function() {
-		it("throws if an incorrect config is passed in", function() {
-			should.throws(function() {
-				ExtractTextPlugin.extract(['style-loader', 'file.css']);
+		it("does not throw if a filename is specified", function() {
+			should.doesNotThrow(function() {
+				ExtractTextPlugin.extract("file.css");
 			});
 		});
 
@@ -23,9 +23,9 @@ describe("ExtractTextPlugin.extract()", function() {
 			});
 		});
 
-		it("does not throw if a filename is specified", function() {
-			should.doesNotThrow(function() {
-				ExtractTextPlugin.extract("file.css");
+		it("throws if an incorrect config is passed in", function() {
+			should.throws(function() {
+				ExtractTextPlugin.extract({style: 'file.css'});
 			});
 		});
 	});

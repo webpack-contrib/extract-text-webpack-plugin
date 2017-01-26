@@ -13,7 +13,11 @@
     },
     "fallbackLoader": {
       "description": "A loader that webpack can fall back to if the original one fails.",
-      "type": "string"
+      "modes": {
+        "type": "string",
+        "type": "object",
+        "type": "array"
+      }
     },
     "filename": {
       "description": "The filename and path that ExtractTextPlugin will extract to",
@@ -21,7 +25,11 @@
     },
     "loader": {
       "description": "The loader that ExtractTextPlugin will attempt to load through.",
-      "type": "string"
+      "modes": {
+        "type": "string",
+        "type": "object",
+        "type": "array"
+      }
     },
     "publicPath": {
       "description": "",

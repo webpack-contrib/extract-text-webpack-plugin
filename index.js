@@ -184,6 +184,8 @@ ExtractTextPlugin.prototype.extract = function(options) {
 	}
 	if(Array.isArray(options) || isString(options) || typeof options.options === "object" || typeof options.query === 'object') {
 		options = { loader: options };
+	} else {
+		schemaTester(options);
 	}
 	var loader = options.loader;
 	var before = options.fallbackLoader || [];

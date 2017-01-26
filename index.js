@@ -130,12 +130,11 @@ function ExtractTextPlugin(options) {
 }
 module.exports = ExtractTextPlugin;
 
-// modified from webpack/lib/LoadersList.js
-function getLoaderWithQuery(loader) {
-	if(isString(loader)) return loader;
-	if(!loader.query) return loader.loader;
-	var query = isString(loader.query) ? loader.query : JSON.stringify(loader.query);
-	return loader.loader + "?" + query;
+function getLoaderObject(loader) {
+	if (isString(loader)) {
+		return {loader: loader};
+	}
+	return loader;
 }
 
 function mergeOptions(a, b) {
@@ -151,7 +150,7 @@ function isString(a) {
 }
 
 ExtractTextPlugin.loader = function(options) {
-	return { loader: require.resolve("./loader"), query: options };
+	return { loader: require.resolve("./loader"), options: options };
 };
 
 ExtractTextPlugin.prototype.applyAdditionalInformation = function(source, info) {
@@ -182,7 +181,7 @@ ExtractTextPlugin.prototype.extract = function(options) {
 						"    fallbackLoader: string | object | loader[]\n" +
 						"    publicPath: string\n");
 	}
-	if(Array.isArray(options) || isString(options) || typeof options.query === "object") {
+	if(Array.isArray(options) || isString(options) || typeof options.options === "object" || typeof options.query === 'object') {
 		options = { loader: options };
 	}
 	var loader = options.loader;
@@ -200,8 +199,7 @@ ExtractTextPlugin.prototype.extract = function(options) {
 	delete options.fallbackLoader;
 	return [this.loader(options)]
 		.concat(before, loader)
-		.map(getLoaderWithQuery)
-		.join("!");
+		.map(getLoaderObject);
 }
 
 ExtractTextPlugin.extract = ExtractTextPlugin.prototype.extract.bind(ExtractTextPlugin);

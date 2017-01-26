@@ -16,7 +16,7 @@
       "type": "string"
     },
     "filename": {
-      "description": "The filename and path that ExtractTextPlugin will extract to.",
+      "description": "The filename and path that ExtractTextPlugin will extract to",
       "type": "string"
     },
     "loader": {
@@ -27,6 +27,5 @@
       "description": "",
       "type": "string"
     }
-  },
-  "required": ["loader"]
+  }
 }

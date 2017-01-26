@@ -9,7 +9,7 @@ var ExtractedModule = require("./ExtractedModule");
 var Chunk = require("webpack/lib/Chunk");
 var OrderUndefinedError = require("./OrderUndefinedError");
 var loaderUtils = require("loader-utils");
-var schemaTester = require('./schema/valid');
+var schemaTester = require('./schema/validator');
 
 var NS = fs.realpathSync(__dirname);
 
@@ -105,7 +105,6 @@ function getOrder(a, b) {
 }
 
 function ExtractTextPlugin(options) {
-	schemaTester(options);
 	if(arguments.length > 1) {
 		throw new Error("Breaking change: ExtractTextPlugin now only takes a single argument. Either an options " +
 						"object *or* the name of the result file.\n" +
@@ -120,6 +119,8 @@ function ExtractTextPlugin(options) {
 	}
 	if(isString(options)) {
 		options = { filename: options };
+	} else {
+		schemaTester(options);
 	}
 	this.filename = options.filename;
 	this.id = options.id != null ? options.id : ++nextId;

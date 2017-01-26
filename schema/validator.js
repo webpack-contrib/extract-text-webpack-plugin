@@ -7,6 +7,6 @@ module.exports = function validate(data) {
 	var valid = validSchema(data);
 
 	if(!valid) {
-		throw new Error("Your ExtractTextPlugin config is not correct. Please double check.");
+		throw new Error(ajv.errorsText());
 	}
 }

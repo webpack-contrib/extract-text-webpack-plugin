@@ -8,7 +8,5 @@ module.exports = function validate(data) {
 
 	if(!valid) {
 		throw new Error("Your ExtractTextPlugin config is not correct. Please double check.");
-	} else {
-		console.log('your stuff works');
 	}
 }

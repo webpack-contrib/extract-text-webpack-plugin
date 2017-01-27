@@ -33,9 +33,9 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        loader: ExtractTextPlugin.extract({
+        use: ExtractTextPlugin.extract({
           fallbackLoader: "style-loader",
-          loader: "css-loader"
+          use: "css-loader"
         })
       }
     ]
@@ -81,7 +81,7 @@ new ExtractTextPlugin(options: filename | object)
 ExtractTextPlugin.extract(options: loader | object)
 ```
 
-Creates an extracting loader from an existing loader. Supports loaders of type `{ loader: string; query: object }`.
+Creates an extracting loader from an existing loader. Supports loaders of type `{ loader: [name]-loader -> {String}, options: {} -> {Object} }`.
 
 |Name|Type|Description|
 |:--:|:--:|:----------|
@@ -106,11 +106,11 @@ module.exports = {
     use: [
       {
         test: /\.css$/,
-        loader: extractCSS.extract([ 'css-loader', 'postcss-loader' ])
+        use: extractCSS.extract([ 'css-loader', 'postcss-loader' ])
       },
       {
         test: /\.html$/i,
-        loader: extractLESS.extract([ 'css-loader', 'less-loader' ])
+        use: extractLESS.extract([ 'css-loader', 'less-loader' ])
       },
     ]
   },

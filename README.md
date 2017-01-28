@@ -142,14 +142,14 @@ module.exports = {
 [node]: https://img.shields.io/node/v/extract-text-webpack-plugin.svg
 [node-url]: https://nodejs.org
 
-[deps]: https://david-dm.org/webpack/extract-text-webpack-plugin.svg
-[deps-url]: https://david-dm.org/webpack/extract-text-webpack-plugin
+[deps]: https://david-dm.org/webpack-contrib/extract-text-webpack-plugin.svg
+[deps-url]: https://david-dm.org/webpack-contrib/extract-text-webpack-plugin
 
-[tests]: http://img.shields.io/travis/webpack/extract-text-webpack-plugin.svg
-[tests-url]: https://travis-ci.org/webpack/extract-text-webpack-plugin
+[tests]: http://img.shields.io/travis/webpack-contrib/extract-text-webpack-plugin.svg
+[tests-url]: https://travis-ci.org/webpack-contrib/extract-text-webpack-plugin
 
-[cover]: https://coveralls.io/repos/github/webpack/extract-text-webpack-plugin/badge.svg
-[cover-url]: https://coveralls.io/github/webpack/extract-text-webpack-plugin
+[cover]: https://coveralls.io/repos/github/webpack-contrib/extract-text-webpack-plugin/badge.svg
+[cover-url]: https://coveralls.io/github/webpack-contrib/extract-text-webpack-plugin
 
 [chat]: https://badges.gitter.im/webpack/webpack.svg
 [chat-url]: https://gitter.im/webpack/webpack

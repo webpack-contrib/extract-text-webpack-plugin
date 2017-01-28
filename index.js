@@ -9,6 +9,7 @@ var ExtractedModule = require("./ExtractedModule");
 var Chunk = require("webpack/lib/Chunk");
 var OrderUndefinedError = require("./OrderUndefinedError");
 var loaderUtils = require("loader-utils");
+var schemaTester = require('./schema/validator');
 
 var NS = fs.realpathSync(__dirname);
 
@@ -118,6 +119,8 @@ function ExtractTextPlugin(options) {
 	}
 	if(isString(options)) {
 		options = { filename: options };
+	} else {
+		schemaTester(options);
 	}
 	this.filename = options.filename;
 	this.id = options.id != null ? options.id : ++nextId;
@@ -181,6 +184,8 @@ ExtractTextPlugin.prototype.extract = function(options) {
 	}
 	if(Array.isArray(options) || isString(options) || typeof options.options === "object" || typeof options.query === 'object') {
 		options = { loader: options };
+	} else {
+		schemaTester(options);
 	}
 	var loader = options.loader;
 	var before = options.fallbackLoader || [];

@@ -10,12 +10,12 @@
     "webpack": "^2.2.0"
   },
   "dependencies": {
+    "ajv": "^4.11.2",
     "async": "^2.1.2",
     "loader-utils": "^0.2.16",
     "webpack-sources": "^0.1.0"
   },
   "devDependencies": {
-    "ajv": "^4.11.2",
     "codecov.io": "^0.1.2",
     "coveralls": "^2.11.2",
     "css-loader": "^0.26.1",

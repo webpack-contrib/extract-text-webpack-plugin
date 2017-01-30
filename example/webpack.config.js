@@ -13,8 +13,8 @@ module.exports = {
 	},
 	module: {
 		loaders: [
-			{ test: /\.css$/, loader: ExtractTextPlugin.extract({
-				notExtractLoader: "style-loader",
+			{ test: /\.css$/, use: ExtractTextPlugin.extract({
+				fallbackLoader: "style-loader",
 				loader: "css-loader?sourceMap",
 				publicPath: "../"
 			}) },

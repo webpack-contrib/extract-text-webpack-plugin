@@ -1,4 +1,4 @@
-{
+module.exports = {
 	"$schema": "http://json-schema.org/draft-04/schema#",
 	"type": "object",
 	"additionalProperties": false,
@@ -7,9 +7,13 @@
 		"disable": { "type": "boolean" },
 		"omit": { "type": "boolean" },
 		"remove": { "type": "boolean" },
-		"fallbackLoader": { "type": ["string", "array", "object"] },
+		"fallback": { "type": ["string", "array", "object"] },
 		"filename": { "type": "string" },
-		"loader": { "type": ["string", "array", "object"] },
-		"publicPath": { "type": "string" }
+		"use": { "type": ["string", "array", "object"] },
+		"publicPath": { "type": "string" },
+
+		// deprecated
+		"fallbackLoader": { "type": ["string", "array", "object"] },
+		"loader": { "type": ["string", "array", "object"] }
 	}
-}
+};

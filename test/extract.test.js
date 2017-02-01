@@ -19,7 +19,7 @@ describe("ExtractTextPlugin.extract()", function() {
 
 		it("does not throw if a correct config object is passed in", function() {
 			should.doesNotThrow(function() {
-				ExtractTextPlugin.extract({loader: 'css-loader'});
+				ExtractTextPlugin.extract({use: 'css-loader'});
 			});
 		});
 
@@ -66,7 +66,7 @@ describe("ExtractTextPlugin.extract()", function() {
 		});
 
 		it("accepts a loader object", function() {
-			ExtractTextPlugin.extract({ loader: "css-loader" }).should.deepEqual([
+			ExtractTextPlugin.extract({ use: "css-loader" }).should.deepEqual([
 				{ loader: loaderPath, options: { omit: 0, remove:true } },
 				{ loader: "css-loader" }
 			]);
@@ -74,14 +74,23 @@ describe("ExtractTextPlugin.extract()", function() {
 
 		it("accepts a loader object with an options object", function() {
 			ExtractTextPlugin.extract(
-				{ loader: "css-loader", options: { modules: true } }
+				{ use: "css-loader", options: { modules: true } }
 			).should.deepEqual([
 				{ loader: loaderPath, options: { omit: 0, remove:true } },
-				{ loader: "css-loader", options: { modules: true } }
+				{ use: "css-loader", options: { modules: true } }
 			]);
 		});
 
 		it("accepts a loader object with a (legacy) query object", function() {
+			ExtractTextPlugin.extract(
+				{ use: "css-loader", query: { modules: true } }
+			).should.deepEqual([
+				{ loader: loaderPath, options: { omit: 0, remove:true } },
+				{ use: "css-loader", query: { modules: true } }
+			]);
+		});
+
+		it("accepts a loader object with a legacy loader field", function() {
 			ExtractTextPlugin.extract(
 				{ loader: "css-loader", query: { modules: true } }
 			).should.deepEqual([
@@ -104,11 +113,11 @@ describe("ExtractTextPlugin.extract()", function() {
 		});
 	})
 
-	context("specifying fallbackLoader", function() {
-		it("accepts a fallbackLoader string", function() {
+	context("specifying fallback", function() {
+		it("accepts a fallback string", function() {
 			ExtractTextPlugin.extract({
-				fallbackLoader: "style-loader",
-				loader: "css-loader"
+				fallback: "style-loader",
+				use: "css-loader"
 			}).should.deepEqual([
 				{ loader: loaderPath, options: { omit: 1, remove: true } },
 				{ loader: "style-loader" },
@@ -116,10 +125,21 @@ describe("ExtractTextPlugin.extract()", function() {
 			]);
 		});
 
-		it("accepts a chained fallbackLoader string", function() {
+		it("accepts a fallback string with legacy fallbackLoader option", function() {
 			ExtractTextPlugin.extract({
-				fallbackLoader: "something-loader!style-loader",
-				loader: "css-loader"
+				fallbackLoader: "style-loader",
+				use: "css-loader"
+			}).should.deepEqual([
+				{ loader: loaderPath, options: { omit: 1, remove: true } },
+				{ loader: "style-loader" },
+				{ loader: "css-loader" }
+			]);
+		});
+
+		it("accepts a chained fallback string", function() {
+			ExtractTextPlugin.extract({
+				fallback: "something-loader!style-loader",
+				use: "css-loader"
 			}).should.deepEqual([
 				{ loader: loaderPath, options: { omit: 2, remove: true } },
 				{ loader: "something-loader" },
@@ -128,10 +148,10 @@ describe("ExtractTextPlugin.extract()", function() {
 			]);
 		});
 
-		it("accepts a fallbackLoader object", function() {
+		it("accepts a fallback object", function() {
 		 	ExtractTextPlugin.extract({
-				fallbackLoader: { loader: "style-loader" },
-				loader: "css-loader"
+				fallback: { loader: "style-loader" },
+				use: "css-loader"
 			}).should.deepEqual([
 				{ loader: loaderPath, options: { omit: 1, remove: true } },
 				{ loader: "style-loader" },
@@ -139,13 +159,13 @@ describe("ExtractTextPlugin.extract()", function() {
 			]);
 		});
 
-		it("accepts an array of fallbackLoader objects", function() {
+		it("accepts an array of fallback objects", function() {
 			ExtractTextPlugin.extract({
-				fallbackLoader: [
+				fallback: [
 					{ loader: "something-loader" },
 					{ loader: "style-loader" }
 				],
-				loader: "css-loader"
+				use: "css-loader"
 			 }).should.deepEqual([
 				{ loader: loaderPath, options: { omit: 2, remove: true } },
 				{ loader: "something-loader" },
@@ -157,8 +177,8 @@ describe("ExtractTextPlugin.extract()", function() {
 
 	it("passes additional options to its own loader", function() {
 		ExtractTextPlugin.extract({
-			fallbackLoader: "style-loader",
-			loader: "css-loader",
+			fallback: "style-loader",
+			use: "css-loader",
 			publicPath: "/test"
 		}).should.deepEqual([
 			{ loader: loaderPath, options: { omit: 1, remove: true, publicPath: "/test" } },

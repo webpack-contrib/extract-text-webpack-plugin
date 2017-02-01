@@ -10,7 +10,7 @@ var Chunk = require("webpack/lib/Chunk");
 var OrderUndefinedError = require("./OrderUndefinedError");
 var loaderUtils = require("loader-utils");
 var schemaTester = require('./schema/validator');
-var loaderSchema = require('./schema/loader-schema.json');
+var loaderSchema = require('./schema/loader-schema');
 var pluginSchema = require('./schema/plugin-schema.json');
 
 var NS = fs.realpathSync(__dirname);
@@ -178,19 +178,25 @@ ExtractTextPlugin.prototype.extract = function(options) {
 						"Example: if your old code looked like this:\n" +
 						"    ExtractTextPlugin.extract('style-loader', 'css-loader')\n\n" +
 						"You would change it to:\n" +
-						"    ExtractTextPlugin.extract({ fallbackLoader: 'style-loader', loader: 'css-loader' })\n\n" +
+						"    ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader' })\n\n" +
 						"The available options are:\n" +
-						"    loader: string | object | loader[]\n" +
-						"    fallbackLoader: string | object | loader[]\n" +
+						"    use: string | object | loader[]\n" +
+						"    fallback: string | object | loader[]\n" +
 						"    publicPath: string\n");
+	}
+	if(options.fallbackLoader) {
+		console.warn('fallbackLoader option has been deprecated - replace with "fallback"');
+	}
+	if(options.loader) {
+		console.warn('loader option has been deprecated - replace with "use"');
 	}
 	if(Array.isArray(options) || isString(options) || typeof options.options === "object" || typeof options.query === 'object') {
 		options = { loader: options };
 	} else {
 		schemaTester(loaderSchema, options);
 	}
-	var loader = options.loader;
-	var before = options.fallbackLoader || [];
+	var loader = options.use ||  options.loader;
+	var before = options.fallback || options.fallbackLoader || [];
 	if(isString(loader)) {
 		loader = loader.split("!");
 	}
@@ -201,6 +207,8 @@ ExtractTextPlugin.prototype.extract = function(options) {
 	}
 	options = mergeOptions({omit: before.length, remove: true}, options);
 	delete options.loader;
+	delete options.use;
+	delete options.fallback;
 	delete options.fallbackLoader;
 	return [this.loader(options)]
 		.concat(before, loader)

@@ -39,6 +39,7 @@
     "test": "mocha",
     "travis": "npm run cover -- --report lcovonly",
     "cover": "istanbul cover _mocha",
-    "release": "standard-version"
+    "release": "standard-version",
+    "build:example": "(cd example && webpack)"
   }
 }

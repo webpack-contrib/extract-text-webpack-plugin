@@ -15,7 +15,12 @@ module.exports = {
 		loaders: [
 			{ test: /\.css$/, use: ExtractTextPlugin.extract({
 				fallback: "style-loader",
-				use: "css-loader?sourceMap",
+				use: {
+					loader: "css-loader",
+					options: {
+						sourceMap: true
+					}
+				},
 				publicPath: "../"
 			}) },
 			{ test: /\.png$/, loader: "file-loader" }

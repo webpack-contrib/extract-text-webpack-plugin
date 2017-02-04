@@ -11,7 +11,7 @@
       "description": "",
       "type": "boolean"
     },
-    "fallbackLoader": {
+    "fallback": {
       "description": "A loader that webpack can fall back to if the original one fails.",
       "modes": {
         "type": "string",

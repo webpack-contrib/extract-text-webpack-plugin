@@ -34,8 +34,8 @@ module.exports = {
       {
         test: /\.css$/,
         use: ExtractTextPlugin.extract({
-          fallbackLoader: "style-loader",
-          loader: "css-loader"
+          fallback: "style-loader",
+          use: "css-loader"
         })
       }
     ]
@@ -85,8 +85,8 @@ Creates an extracting loader from an existing loader. Supports loaders of type `
 
 |Name|Type|Description|
 |:--:|:--:|:----------|
-|**`options.loader`**|`{String}`/`{Object}`|Loader(s) that should be used for converting the resource to a CSS exporting module _(required)_|
-|**`options.fallbackLoader`**|`{String}`/`{Object}`|loader(e.g `'style-loader'`) that should be used when the CSS is not extracted (i.e. in an additional chunk when `allChunks: false`)|
+|**`options.use`**|`{String}`/`{Object}`|Loader(s) that should be used for converting the resource to a CSS exporting module _(required)_|
+|**`options.fallback`**|`{String}`/`{Object}`|loader(e.g `'style-loader'`) that should be used when the CSS is not extracted (i.e. in an additional chunk when `allChunks: false`)|
 |**`options.publicPath`**|`{String}`|Override the `publicPath` setting for this loader|
 
 

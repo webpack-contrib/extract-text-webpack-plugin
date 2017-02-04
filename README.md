@@ -68,6 +68,7 @@ new ExtractTextPlugin(options: filename | object)
 |**`filename`**|`{String}`|Name of the result file. May contain `[name]`, `[id]` and `[contenthash]`|
 |**`options.allChunks`**|`{Boolean}`|Extract from all additional chunks too (by default it extracts only from the initial chunk(s))|
 |**`options.disable`**|`{Boolean}`|Disables the plugin|
+|**`options.ignoreOrder`**|`{Boolean}`|Disables order check (useful for CSS Modules!), `false` by default|
 
 * `[name]` name of the chunk
 * `[id]` number of the chunk

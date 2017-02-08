@@ -86,8 +86,8 @@ Creates an extracting loader from an existing loader. Supports loaders of type `
 
 |Name|Type|Description|
 |:--:|:--:|:----------|
-|**`options.use`**|`{String}`/`{Object}`|Loader(s) that should be used for converting the resource to a CSS exporting module _(required)_|
-|**`options.fallback`**|`{String}`/`{Object}`|loader(e.g `'style-loader'`) that should be used when the CSS is not extracted (i.e. in an additional chunk when `allChunks: false`)|
+|**`options.use`**|`{String}`/`{Array}`/`{Object}`|Loader(s) that should be used for converting the resource to a CSS exporting module _(required)_|
+|**`options.fallback`**|`{String}`/`{Array}`/`{Object}`|loader(e.g `'style-loader'`) that should be used when the CSS is not extracted (i.e. in an additional chunk when `allChunks: false`)|
 |**`options.publicPath`**|`{String}`|Override the `publicPath` setting for this loader|
 
 

@@ -146,7 +146,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new ExtractTextPlugin('style'css)
+    new ExtractTextPlugin('style.css')
     //if you want to pass in options, you can do so:
     //new ExtractTextPlugin({
     //  filename: 'style.css'

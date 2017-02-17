@@ -125,6 +125,36 @@ module.exports = {
 };
 ```
 
+### Extracting Sass or LESS
+
+The configuration is the same, switch out `sass-loader` for `less-loader` when necessary.
+
+```js
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+module.exports = {
+  module: {
+    use: [
+      {
+        test: /\.scss$/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          //resolve-url-loader may be chained before sass-loader if necessary
+          use: ['css-loader', 'sass-loader']
+        })
+      }
+    ]
+  },
+  plugins: [
+    new ExtractTextPlugin('style'css)
+    //if you want to pass in options, you can do so:
+    //new ExtractTextPlugin({
+    //  filename: 'style.css'
+    //})
+  ]
+}
+```
+
 <h2 align="center">Maintainer</h2>
 
 <table>

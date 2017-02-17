@@ -113,7 +113,7 @@ module.exports = {
         use: extractCSS.extract([ 'css-loader', 'postcss-loader' ])
       },
       {
-        test: /\.html$/i,
+        test: /\.less$/i,
         use: extractLESS.extract([ 'css-loader', 'less-loader' ])
       },
     ]

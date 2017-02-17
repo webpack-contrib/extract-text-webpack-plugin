@@ -107,7 +107,7 @@ const extractLESS = new ExtractTextPlugin('stylesheets/[name].less');
 
 module.exports = {
   module: {
-    use: [
+    rules: [
       {
         test: /\.css$/,
         use: extractCSS.extract([ 'css-loader', 'postcss-loader' ])

@@ -161,11 +161,11 @@ module.exports = {
   <tbody>
     <tr>
       <td align="center">
-        <img width="150 height="150" src="https://github.com/sokra.png?s=150">
+        <img width="150" height="150" src="https://github.com/sokra.png?s=150">
         <br>
         <a href="https://github.com/sokra">Tobias Koppers</a>
       </td>
-    <tr>
+    <tr/>
   <tbody>
 </table>
 

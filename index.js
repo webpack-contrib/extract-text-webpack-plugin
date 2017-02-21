@@ -152,6 +152,18 @@ function isString(a) {
 	return typeof a === "string";
 }
 
+function isObject(a) {
+	return isType('Object', a);
+}
+
+function isFunction(a) {
+	return isType('Function', a);
+}
+
+function isType(type, obj) {
+	return Object.prototype.toString.call(obj) === '[object ' + type + ']';
+}
+
 ExtractTextPlugin.loader = function(options) {
 	return { loader: require.resolve("./loader"), options: options };
 };
@@ -317,12 +329,23 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 					});
 					var chunk = extractedChunk.originalChunk;
 					var source = this.renderExtractedChunk(extractedChunk);
-					var file = compilation.getPath(filename, {
+					
+					var format = filename;
+
+					if (isObject(filename)) {
+						format = filename.format;
+					}
+
+					var file = compilation.getPath(format, {
 						chunk: chunk
 					}).replace(/\[(?:(\w+):)?contenthash(?::([a-z]+\d*))?(?::(\d+))?\]/ig, function() {
 						return loaderUtils.getHashDigest(source.source(), arguments[1], arguments[2], parseInt(arguments[3], 10));
 					});
-					file = (options.filenamefilter) ? options.filenamefilter(file) : file;
+					
+					if (isFunction(filename.modify)) {
+						file = filename.modify(file);
+					}
+
 					compilation.assets[file] = source;
 					chunk.files.push(file);
 				}

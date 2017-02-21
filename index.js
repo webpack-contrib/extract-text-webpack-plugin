@@ -152,10 +152,6 @@ function isString(a) {
 	return typeof a === "string";
 }
 
-function isObject(a) {
-	return isType('Object', a);
-}
-
 function isFunction(a) {
 	return isType('Function', a);
 }

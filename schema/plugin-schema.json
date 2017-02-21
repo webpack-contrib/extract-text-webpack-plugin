@@ -23,7 +23,7 @@
       "description": "The filename and path that ExtractTextPlugin will extract to",
       "modes": {
         "type": "string",
-        "type": "object"
+        "type": "function"
       }
     },
     "ignoreOrder": {

@@ -6,11 +6,8 @@ module.exports = {
 	},
 	plugins: [
 		new ExtractTextPlugin({
-			filename:  {
-				format: 'txt/[name].txt',
-				modify: (filename) => {
-					return filename.replace('txt/js', 'txt');
-				}
+			filename:  (getPath) => {
+				return getPath('txt/[name].txt').replace('txt/js', '');
 			},
 			allChunks: true
 		})

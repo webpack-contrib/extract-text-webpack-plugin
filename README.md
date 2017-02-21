@@ -68,7 +68,7 @@ new ExtractTextPlugin(options: filename | object)
 |Name|Type|Description|
 |:--:|:--:|:----------|
 |**`id`**|`{String}`|Unique ident for this plugin instance. (For advanced usage only, by default automatically generated)|
-|**`filename`**|`{String|Object}`|Name of the result file. May contain `[name]`, `[id]` and `[contenthash]`|
+|**`filename`**|`{String|Function}`|Name of the result file. May contain `[name]`, `[id]` and `[contenthash]`|
 |**`allChunks`**|`{Boolean}`|Extract from all additional chunks too (by default it extracts only from the initial chunk(s))|
 |**`disable`**|`{Boolean}`|Disables the plugin|
 |**`ignoreOrder`**|`{Boolean}`|Disables order check (useful for CSS Modules!), `false` by default|
@@ -157,9 +157,8 @@ module.exports = {
 
 ### Modify filename
 
-`filename` parameter could be `Object`. It accepts `format` and `modify` callback as attributes.
-In the following config, before `modify` callback is called, the css path would be `css/js/a.css`.
-After `modify` callback, it is transformed to `css/a.css`.
+`filename` parameter could be `Function`. It passes `getPath` to process the format like `css/[name].css` and returns the real file name, `css/js/a.css`. You can replace `css/js` with `css` then you will get the new path `css/a.css`.
+
 
 ```js
 entry: {
@@ -167,11 +166,8 @@ entry: {
 },
 plugins: [
   new ExtractTextPlugin({
-    filename:  {
-      format: 'css/[name].css',
-      modify: (filename) => {
-        return filename.replace('css/js', 'css');
-      }
+    filename:  (getPath) => {
+      return getPath('css/[name].css').replace('css/js', 'css');
     },
     allChunks: true
   })

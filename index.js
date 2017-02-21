@@ -329,23 +329,15 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 					});
 					var chunk = extractedChunk.originalChunk;
 					var source = this.renderExtractedChunk(extractedChunk);
-					
-					var format = filename;
 
-					if (isObject(filename)) {
-						format = filename.format;
-					}
-
-					var file = compilation.getPath(format, {
+					var getPath = (format) => compilation.getPath(format, {
 						chunk: chunk
 					}).replace(/\[(?:(\w+):)?contenthash(?::([a-z]+\d*))?(?::(\d+))?\]/ig, function() {
 						return loaderUtils.getHashDigest(source.source(), arguments[1], arguments[2], parseInt(arguments[3], 10));
 					});
-					
-					if (isFunction(filename.modify)) {
-						file = filename.modify(file);
-					}
 
+					var file = (isFunction(filename)) ? filename(getPath) : getPath(filename);
+					
 					compilation.assets[file] = source;
 					chunk.files.push(file);
 				}

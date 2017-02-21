@@ -157,7 +157,7 @@ module.exports = {
 
 ### Modify filename
 
-`filename` paramter could be `Object`. It accepts `format` and `modify` callback as attributes.
+`filename` parameter could be `Object`. It accepts `format` and `modify` callback as attributes.
 In the following config, before `modify` callback is called, the css path would be `css/js/a.css`.
 After `modify` callback, it is transformed to `css/a.css`.
 

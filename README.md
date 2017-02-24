@@ -102,8 +102,8 @@ There is also an `extract` function on the instance. You should use this if you 
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 // Create multiple instances
-const extractCSS = new ExtractTextPlugin('stylesheets/[name].css');
-const extractLESS = new ExtractTextPlugin('stylesheets/[name].less');
+const extractCSS = new ExtractTextPlugin('stylesheets/[name]-one.css');
+const extractLESS = new ExtractTextPlugin('stylesheets/[name]-two.css');
 
 module.exports = {
   module: {

@@ -21,7 +21,10 @@
     },
     "filename": {
       "description": "The filename and path that ExtractTextPlugin will extract to",
-      "type": "string"
+      "modes": {
+        "type": "string",
+        "type": "function"
+      }
     },
     "ignoreOrder": {
       "description": "Ignore dependency order (useful for CSS Modules)",

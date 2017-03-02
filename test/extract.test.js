@@ -72,12 +72,36 @@ describe("ExtractTextPlugin.extract()", function() {
 			]);
 		});
 
+		it("accepts an array of loader names in loader object", function() {
+			ExtractTextPlugin.extract({
+				use: ["css-loader", "postcss-loader", "sass-loader"]
+			}).should.deepEqual([
+				{ loader: loaderPath, options: { omit: 0, remove:true } },
+				{ loader: "css-loader" },
+				{ loader: "postcss-loader" },
+				{ loader: "sass-loader" }
+			]);
+		});
+
 		it("accepts a loader object with an options object", function() {
 			ExtractTextPlugin.extract(
 				{ use: "css-loader", options: { modules: true } }
 			).should.deepEqual([
 				{ loader: loaderPath, options: { omit: 0, remove:true } },
 				{ use: "css-loader", options: { modules: true } }
+			]);
+		});
+
+		it("accepts a loader object with an options object in array of loaders", function() {
+			ExtractTextPlugin.extract({
+				use: [
+					{ loader: "css-loader", options: { modules: true } },
+					"postcss-loader"
+				]
+			}).should.deepEqual([
+				{ loader: loaderPath, options: { omit: 0, remove:true } },
+				{ loader: "css-loader", options: { modules: true } },
+				{ loader: "postcss-loader" }
 			]);
 		});
 

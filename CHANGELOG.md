@@ -2,10 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.1.0"></a>
+# [2.1.0](https://github.com/webpack/extract-text-webpack-plugin/compare/v2.0.0...v2.1.0) (2017-03-05)
+
+### Features
+
+* The plugin **filename** accepts a function now. [c9a19ad](https://github.com/webpack-contrib/extract-text-webpack-plugin/commit/c9a19ad), closes [#423](https://github.com/webpack-contrib/extract-text-webpack-plugin/pull/423)
+
 <a name="2.0.0"></a>
 # [2.0.0](https://github.com/webpack/extract-text-webpack-plugin/compare/v2.0.0-rc.3...v2.0.0) (2017-02-24)
-
-
 
 <a name="2.0.0-rc.2"></a>
 # [2.0.0-rc.2](https://github.com/webpack/extract-text-webpack-plugin/compare/v2.0.0-rc.1...v2.0.0-rc.2) (2017-01-28)

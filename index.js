@@ -277,7 +277,8 @@ ExtractTextPlugin.prototype.apply = function(compiler) {
 									return callback();
 								}
 								meta = module[NS];
-								if(!Array.isArray(meta.content)) {
+								// Error out if content is not an array and is not null
+								if(!Array.isArray(meta.content) && meta.content != null) {
 									err = new Error(module.identifier() + " doesn't export content");
 									compilation.errors.push(err);
 									return callback();

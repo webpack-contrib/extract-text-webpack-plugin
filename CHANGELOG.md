@@ -5,21 +5,21 @@ All notable changes to this project will be documented in this file. See [standa
 <a name="3.0.0-beta.3"></a>
 # [3.0.0-beta.3](https://github.com/webpack-contrib/extract-text-webpack-plugin/compare/v3.0.0-beta.2...v3.0.0-beta.3) (2017-06-24)
 
+### Bug Fixes
+
+* Distribute schema with package ([5d0c28f](https://github.com/webpack-contrib/extract-text-webpack-plugin/commit/5d0c28f))
 
 
 <a name="3.0.0-beta.2"></a>
 # [3.0.0-beta.2](https://github.com/webpack-contrib/extract-text-webpack-plugin/compare/v3.0.0-beta.1...v3.0.0-beta.2) (2017-06-24)
 
-
+ * Skipped due to deployment issues with schema
 
 <a name="3.0.0-beta.1"></a>
 # [3.0.0-beta.1](https://github.com/webpack-contrib/extract-text-webpack-plugin/compare/v3.0.0-beta.0...v3.0.0-beta.1) (2017-06-24)
 
 
-### Bug Fixes
-
-* Distribute schema with package ([5d0c28f](https://github.com/webpack-contrib/extract-text-webpack-plugin/commit/5d0c28f))
-
+ * Skipped due to deployment issues with schema
 
 
 <a name="3.0.0-beta.0"></a>

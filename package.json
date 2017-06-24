@@ -6,7 +6,8 @@
   "license": "MIT",
   "main": "dist/cjs.js",
   "files": [
-    "dist"
+    "dist",
+    "schema"
   ],
   "scripts": {
     "start": "npm run build -- -w",

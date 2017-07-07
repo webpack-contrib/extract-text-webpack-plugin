@@ -1,5 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Webpack Integration Tests chunk-modules-nested-ordered-by-id 1`] = `
+"body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+.block {
+	color: tomato;
+}
+.App {
+	color: black;
+}
+"
+`;
+
 exports[`Webpack Integration Tests chunk-modules-ordered-by-id 1`] = `
 ".block {
 	color: tomato;

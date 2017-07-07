@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.0.0-rc.0"></a>
+# [3.0.0-rc.0](https://github.com/webpack-contrib/extract-text-webpack-plugin/compare/v3.0.0-beta.3...v3.0.0-rc.0) (2017-07-07)
+
+
+### Code Refactoring
+
+* Update deprecated `chunk.modules` functions ([#553](https://github.com/webpack-contrib/extract-text-webpack-plugin/issues/553)) ([be7936d](https://github.com/webpack-contrib/extract-text-webpack-plugin/commit/be7936d))
+
+
+### BREAKING CHANGES
+
+* Updates to `Chunk.mapModules | forEachModule | getNumberOfModules`. This release is not backwards compatible with `Webpack 2.x` due to breaking changes in webpack/webpack#4764
+
+
+
 <a name="3.0.0-beta.3"></a>
 # [3.0.0-beta.3](https://github.com/webpack-contrib/extract-text-webpack-plugin/compare/v3.0.0-beta.2...v3.0.0-beta.3) (2017-06-24)
 

@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.0.0-rc.1"></a>
+# [3.0.0-rc.1](https://github.com/webpack-contrib/extract-text-webpack-plugin/compare/v3.0.0-rc.0...v3.0.0-rc.1) (2017-07-07)
+
+
+### Bug Fixes
+
+* Module sorting ([27e3a28](https://github.com/webpack-contrib/extract-text-webpack-plugin/commit/27e3a28))
+
+
+
 <a name="3.0.0-rc.0"></a>
 # [3.0.0-rc.0](https://github.com/webpack-contrib/extract-text-webpack-plugin/compare/v3.0.0-beta.3...v3.0.0-rc.0) (2017-07-07)
 

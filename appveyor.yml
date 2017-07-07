@@ -1,7 +1,6 @@
 branches:
   only:
     - master
-    - feature/webpack3
 init:
   - git config --global core.autocrlf input
 environment:
@@ -10,6 +9,9 @@ environment:
       webpack_version: latest
       job_part: test
     - nodejs_version: '6'
+      webpack_version: latest
+      job_part: test
+    - nodejs_version: '4.3'
       webpack_version: latest
       job_part: test
 build: 'off'

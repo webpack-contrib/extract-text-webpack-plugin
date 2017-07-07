@@ -2,10 +2,10 @@
 
 exports[`Webpack Integration Tests chunk-modules-css-wrong-order 1`] = `
 ".block {
-	color: tomato;
+  color: tomato;
 }
 .App {
-	color: black;
+  color: black;
 }
 "
 `;

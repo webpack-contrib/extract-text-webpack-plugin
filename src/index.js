@@ -144,7 +144,6 @@ class ExtractTextPlugin {
         async.forEach(chunks, (chunk, callback) => { // eslint-disable-line no-shadow
           const extractedChunk = extractedChunks[chunks.indexOf(chunk)];
           const shouldExtract = !!(options.allChunks || isInitialOrHasNoParents(chunk));
-          chunk.sortModules();
           async.forEach(chunk.mapModules(c => c), (module, callback) => { // eslint-disable-line no-shadow
             let meta = module[NS];
             if (meta && (!meta.options.id || meta.options.id === id)) {
@@ -194,7 +193,7 @@ class ExtractTextPlugin {
       compilation.plugin('additional-assets', (callback) => {
         extractedChunks.forEach((extractedChunk) => {
           if (extractedChunk.getNumberOfModules()) {
-            extractedChunk.modules.sort((a, b) => {
+            extractedChunk.sortModules((a, b) => {
               if (!options.ignoreOrder && isInvalidOrder(a, b)) {
                 compilation.errors.push(new OrderUndefinedError(a.getOriginalModule()));
                 compilation.errors.push(new OrderUndefinedError(b.getOriginalModule()));

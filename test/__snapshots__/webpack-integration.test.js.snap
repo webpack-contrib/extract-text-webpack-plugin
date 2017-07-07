@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Webpack Integration Tests chunk-modules-ordered-by-id 1`] = `
+".block {
+	color: tomato;
+}
+.App {
+	color: black;
+}
+"
+`;
+
 exports[`Webpack Integration Tests common-async 1`] = `
 "a
 b

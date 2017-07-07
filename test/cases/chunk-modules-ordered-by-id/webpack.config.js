@@ -1,7 +1,19 @@
-var ExtractTextPlugin = require("../../../");
+import ExtractTextPlugin from '../../../src/index';
+
 module.exports = {
-	entry: "./index",
-	plugins: [
-		new ExtractTextPlugin("file.css")
-	]
+  entry: './index',
+  module: {
+    loaders: [
+      {
+        test: /\.css$/,
+        use: ExtractTextPlugin.extract({
+          fallback: { loader: 'style-loader' },
+          use: { loader: 'css-loader', },
+        })
+      },
+    ],
+  },
+  plugins: [
+    new ExtractTextPlugin('file.css'),
+  ],
 };

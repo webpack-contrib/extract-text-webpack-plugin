@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.0.0"></a>
+# [3.0.0](https://github.com/webpack-contrib/extract-text-webpack-plugin/compare/v2.1.2...v3.0.0) (2017-07-10)
+
+
+### Bug Fixes
+
+* add missing `options.ignoreOrder` details in Error message ([#539](https://github.com/webpack-contrib/extract-text-webpack-plugin/issues/539)) ([dd43832](https://github.com/webpack-contrib/extract-text-webpack-plugin/commit/dd43832))
+
+
+### Code Refactoring
+
+* Apply webpack-defaults & webpack 3.x support ([#540](https://github.com/webpack-contrib/extract-text-webpack-plugin/issues/540)) ([7ae32d9](https://github.com/webpack-contrib/extract-text-webpack-plugin/commit/7ae32d9))
+
+
+### BREAKING CHANGES
+
+* Enforces `engines` of `"node": ">=4.3.0 < 5.0.0 || >= 5.10`
+
+- refactor: DeprecationWarning: Chunk.modules [543](https://github.com/webpack-contrib/extract-text-webpack-plugin/pull/543)
+* Updates to `Chunk.mapModules`. This release is not backwards compatible with `Webpack 2.x` due to breaking changes in webpack/webpack#4764
+
+- fix: css generation order issue see: webpack/webpack#5225
+* Enforces `peerDependencies` of `"webpack": "^3.1.0"`. 
+
+
+
 <a name="3.0.0-rc.2"></a>
 # [3.0.0-rc.2](https://github.com/webpack-contrib/extract-text-webpack-plugin/compare/v3.0.0-rc.1...v3.0.0-rc.2) (2017-07-10)
 

@@ -1,15 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Webpack Integration Tests chunk-modules-css-wrong-order 1`] = `
-".block {
-  color: tomato;
-}
-.App {
-  color: black;
-}
-"
-`;
-
 exports[`Webpack Integration Tests chunk-modules-nested-ordered-by-id 1`] = `
 "body {
   margin: 0;

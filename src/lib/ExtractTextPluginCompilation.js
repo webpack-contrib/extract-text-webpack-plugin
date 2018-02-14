@@ -1,4 +1,7 @@
-/* eslint-disable no-multi-assign */
+/* eslint-disable
+  no-multi-assign,
+  no-param-reassign
+*/
 import ExtractedModule from './ExtractedModule';
 
 class ExtractTextPluginCompilation {

@@ -1,3 +1,6 @@
+/* eslint-disable
+  no-param-reassign
+*/
 export function isInitialOrHasNoParents(chunk) {
   let parentCount = 0;
 

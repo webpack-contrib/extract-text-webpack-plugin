@@ -1,3 +1,8 @@
+/* eslint-disable
+  consistent-return,
+  no-param-reassign,
+  prefer-rest-params
+*/
 import fs from 'fs';
 import path from 'path';
 import Chunk from 'webpack/lib/Chunk';

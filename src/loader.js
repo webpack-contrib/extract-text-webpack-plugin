@@ -1,3 +1,7 @@
+/* eslint-disable
+  consistent-return,
+  no-param-reassign
+*/
 import fs from 'fs';
 import path from 'path';
 import loaderUtils from 'loader-utils';

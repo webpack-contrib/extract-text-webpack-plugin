@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.0.0-beta.0"></a>
+# [4.0.0-beta.0](https://github.com/webpack-contrib/extract-text-webpack-plugin/compare/v4.0.0-alpha.0...v4.0.0-beta.0) (2018-02-28)
+
+
+### Bug Fixes
+
+* **index:** don't crash with dynamic `import()` ([#728](https://github.com/webpack-contrib/extract-text-webpack-plugin/issues/728)) ([348b46b](https://github.com/webpack-contrib/extract-text-webpack-plugin/commit/348b46b))
+
+
+
 <a name="4.0.0-alpha.0"></a>
 # [4.0.0-alpha.0](https://github.com/webpack-contrib/extract-text-webpack-plugin/compare/v3.0.2...v4.0.0-alpha.0) (2018-02-14)
 

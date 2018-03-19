@@ -42,10 +42,8 @@ c
 "
 `;
 
-exports[`Webpack Integration Tests hashed-module-ids 1`] = `
-"index
-a
-b
+exports[`Webpack Integration Tests empty-chunk 1`] = `
+"a
 "
 `;
 
@@ -101,8 +99,6 @@ exports[`Webpack Integration Tests multiple-entries-filename 2`] = `
 c
 "
 `;
-
-exports[`Webpack Integration Tests multiple-entries-filename 3`] = `""`;
 
 exports[`Webpack Integration Tests nested 1`] = `
 "a

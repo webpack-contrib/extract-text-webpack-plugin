@@ -1,13 +1,16 @@
 {
   "name": "extract-text-webpack-plugin",
   "version": "4.0.0-beta.0",
-  "author": "Tobias Koppers @sokra",
   "description": "Extract text from bundle into a file.",
   "license": "MIT",
+  "repository": "webpack-contrib/extract-text-webpack-plugin",
+  "author": "Tobias Koppers @sokra",
+  "homepage": "https://github.com/webpack-contrib/extract-text-webpack-plugin",
+  "bugs": "https://github.com/webpack-contrib/extract-text-webpack-plugin/issues",
   "main": "dist/cjs.js",
-  "files": [
-    "dist"
-  ],
+  "engines": {
+    "node": ">= 6.9.0 || >= 8.9.0"
+  },
   "scripts": {
     "start": "npm run build -- -w",
     "build": "cross-env NODE_ENV=production babel src -d dist --ignore 'src/**/*.test.js' --copy-files",
@@ -18,7 +21,7 @@
     "ci:lint:commits": "commitlint --from=${CIRCLE_BRANCH} --to=${CIRCLE_SHA1}",
     "lint-staged": "lint-staged",
     "prebuild": "npm run clean",
-    "prepare": "npm run build",
+    "prepublish": "npm run build",
     "release": "standard-version",
     "release:ci": "conventional-github-releaser -p angular",
     "release:validate": "commitlint --from=$(git describe --tags --abbrev=0) --to=$(git rev-parse HEAD)",
@@ -30,6 +33,15 @@
     "ci:test": "npm run test -- --runInBand",
     "ci:coverage": "npm run test:coverage -- --runInBand",
     "defaults": "webpack-defaults"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "webpack"
+  ],
+  "peerDependencies": {
+    "webpack": "^3.0.0 || ^4.0.0"
   },
   "dependencies": {
     "async": "^2.4.1",
@@ -67,25 +79,16 @@
     "standard-version": "^4.3.0",
     "style-loader": "^0.19.1",
     "webpack": "^4.1.1",
-    "webpack-defaults": "^2.0.0-rc.4"
+    "webpack-defaults": "^2.1.4"
   },
-  "engines": {
-    "node": ">= 6.9.0 || >= 8.9.0"
+  "jest": {
+    "testEnvironment": "node"
   },
-  "peerDependencies": {
-    "webpack": "^3.0.0 || ^4.0.0"
-  },
-  "homepage": "https://github.com/webpack-contrib/extract-text-webpack-plugin",
-  "repository": "https://github.com/webpack-contrib/extract-text-webpack-plugin",
-  "bugs": "https://github.com/webpack-contrib/extract-text-webpack-plugin/issues",
   "pre-commit": "lint-staged",
   "lint-staged": {
     "*.js": [
       "eslint --fix",
       "git add"
     ]
-  },
-  "jest": {
-    "testEnvironment": "node"
   }
 }

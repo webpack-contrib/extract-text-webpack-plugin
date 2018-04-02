@@ -91,9 +91,9 @@ jobs:
       - run:
           name: Run NSP Security Check.
           command: npm run security
-      - run:
-          name: Validate Commit Messages
-          command: npm run ci:lint:commits
+      # - run:
+      #     name: Validate Commit Messages
+      #     command: npm run ci:lint:commits
   publish:
     docker:
       - image: webpackcontrib/circleci-node-base:latest
@@ -105,9 +105,9 @@ jobs:
       - run:
           name: NPM Rebuild
           command: npm install
-      - run:
-          name: Validate Commit Messages
-          command: npm run release:validate
+      # - run:
+      #     name: Validate Commit Messages
+      #     command: npm run release:validate
       - run:
           name: Publish to NPM
           command: printf "noop running conventional-github-releaser"

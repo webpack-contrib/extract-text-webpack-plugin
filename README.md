@@ -1,3 +1,11 @@
+# DEPRECATED
+
+Please use: https://github.com/webpack-contrib/mini-css-extract-plugin
+
+If you have problem(s) with migration on MiniCssExtractPlugin feel free to open issue with reproducible test repo, thanks
+
+---
+
 [![npm][npm]][npm-url]
 [![node][node]][node-url]
 [![deps][deps]][deps-url]
